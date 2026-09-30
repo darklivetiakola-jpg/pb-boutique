@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: pb-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    disk:            # volume persistant pour les images téléversées (plan payant)
+      name: uploads
+      mountPath: /var/data/uploads
+      sizeGB: 1
+    envVars:
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: NODE_ENV
+        value: production
+      - fromGroup: pb-secrets   # à créer dans Render avec les variables de .env.production.example
