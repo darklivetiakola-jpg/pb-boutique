@@ -346,3 +346,14 @@ img { max-width: 100%; }
   .cartp-bar-m .btn { flex: 1; max-width: 200px; justify-content: center; }
   .whatsapp-float { bottom: 100px; }
 }
+
+/* ---------- Thème sombre verrouillé ---------- */
+:root { color-scheme: dark; }
+.origin-wrap { background: #0F0F11; border: 1px solid #1F1F23; }
+.origin-title { color: #fff; }
+.origin-title span { color: #E6BB4E; }
+.origin-body { color: rgba(255,255,255,.7); }
+.origin-kicker { color: #E6BB4E; }
+.origin-text { display: flex; flex-direction: column; justify-content: center; gap: 0; padding: clamp(28px, 5vw, 64px); }
+.origin-title { margin: 14px 0 16px; }
+@media (max-width: 720px) { .origin-wrap { grid-template-columns: 1fr; } .origin-img { min-height: 260px; } }

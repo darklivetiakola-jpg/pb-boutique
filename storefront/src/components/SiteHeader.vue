@@ -15,9 +15,6 @@
             <i class="fa-solid fa-magnifying-glass"></i>
             <input v-model="search" @keydown.enter="doSearch" type="search" placeholder="Rechercher…" enterkeyhint="search" aria-label="Rechercher un produit" />
           </label>
-          <button class="hact hact-theme" :title="isDark ? 'Mode clair' : 'Mode sombre'" :aria-label="isDark ? 'Mode clair' : 'Mode sombre'" @click="toggleTheme">
-            <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
-          </button>
           <router-link to="/compte" class="hact hact-user" aria-label="Mon compte"><i class="fa-regular fa-user"></i></router-link>
           <router-link to="/favoris" class="hact" aria-label="Mes favoris">
             <i class="fa-regular fa-heart"></i>
@@ -41,7 +38,6 @@
     <router-link v-for="c in categories" :key="c.slug" :to="`/categorie/${c.slug}`" @click="menuOpen = false">{{ c.label }}<i class="fa-solid fa-chevron-right"></i></router-link>
     <router-link to="/favoris" @click="menuOpen = false">Mes favoris<i class="fa-solid fa-chevron-right"></i></router-link>
     <router-link to="/compte" @click="menuOpen = false">Mon compte<i class="fa-solid fa-chevron-right"></i></router-link>
-    <button class="mmenu-theme" @click="toggleTheme"><i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i> {{ isDark ? "Mode clair" : "Mode sombre" }}</button>
   </nav>
 </template>
 
@@ -57,7 +53,6 @@ const router = useRouter();
 const cart = useCartStore();
 const toast = useToastStore();
 const search = ref("");
-const isDark = ref(false);
 const menuOpen = ref(false);
 watch(() => route.fullPath, () => { menuOpen.value = false; });
 watch(menuOpen, (v) => { document.body.style.overflow = v ? "hidden" : ""; });
@@ -71,18 +66,11 @@ const categories = [
   { slug: "nouveautes", label: "Nouveautés" },
 ];
 
-function toggleTheme() {
-  const next = isDark.value ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  localStorage.setItem("pb_boutique_theme", next);
-  isDark.value = next === "dark";
-}
 
 function doSearch() {
   if (search.value.trim()) toast.show(`Recherche : "${search.value.trim()}"`);
 }
 
 onMounted(() => {
-  isDark.value = document.documentElement.getAttribute("data-theme") === "dark";
 });
 </script>
