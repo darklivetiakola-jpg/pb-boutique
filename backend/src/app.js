@@ -1,4 +1,6 @@
 import express from "express";
+import path from "path";
+import fs from "fs";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -29,11 +31,18 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "https:", "data:"],
-      connectSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://accounts.google.com", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      fontSrc: ["'self'", "https:", "data:"],
+      imgSrc: ["'self'", "https:", "data:", "blob:"],
+      mediaSrc: ["'self'", "https:", "blob:"],
+      connectSrc: ["'self'", "https://accounts.google.com"],
+      frameSrc: ["'self'", "https://accounts.google.com"],
+      objectSrc: ["'none'"],
     },
   },
   crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
 }));
 
 app.use(cors({
@@ -67,6 +76,19 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/uploads", uploadsRoutes);
+
+// ---- Sert la boutique (/) et l'admin (/admin) depuis ce même service : une seule adresse, pas de CORS ----
+const ROOT = path.resolve(process.cwd(), "..");
+const shopDist = path.join(ROOT, "storefront", "dist");
+const adminDist = path.join(ROOT, "admin", "dist");
+if (fs.existsSync(adminDist)) {
+  app.use("/admin", express.static(adminDist, { maxAge: "1h" }));
+  app.get("/admin/*", (req, res) => res.sendFile(path.join(adminDist, "index.html")));
+}
+if (fs.existsSync(shopDist)) {
+  app.use(express.static(shopDist, { maxAge: "1h" }));
+  app.get(/^\/(?!api\/|uploads\/|admin(\/|$)).*/, (req, res) => res.sendFile(path.join(shopDist, "index.html")));
+}
 
 app.use(notFound);
 app.use(errorHandler);

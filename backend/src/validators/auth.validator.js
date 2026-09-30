@@ -12,3 +12,12 @@ export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().max(200).optional(),
+  newPassword: z.string()
+    .min(10, "10 caractères minimum")
+    .max(100)
+    .regex(/[A-Za-z]/, "Ajoutez au moins une lettre")
+    .regex(/\d/, "Ajoutez au moins un chiffre"),
+});

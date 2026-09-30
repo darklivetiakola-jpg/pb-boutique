@@ -3,7 +3,7 @@
     <!-- Barre latérale (desktop) -->
     <aside class="hidden lg:flex w-64 bg-paper border-r border-line flex-col shrink-0 sticky top-0 h-screen">
       <div class="flex items-center gap-3 px-5 py-5">
-        <img src="/logo.png" alt="PB" class="w-10 h-10 rounded-xl" />
+        <img :src="logo" alt="PB" class="w-10 h-10 rounded-xl" />
         <div>
           <div class="font-bold leading-tight">PB Boutique</div>
           <div class="text-xs text-muted leading-tight">Administration</div>
@@ -29,7 +29,7 @@
           <div class="text-xs text-muted">{{ section }}</div>
           <h1 class="text-xl font-bold tracking-tight leading-tight">{{ title }}</h1>
         </div>
-        <a href="http://localhost:5500" target="_blank" class="btn-outline !bg-paper border border-line text-sm !py-2">Voir la boutique</a>
+        <a href="/" target="_blank" class="btn-outline !bg-paper border border-line text-sm !py-2">Voir la boutique</a>
       </header>
       <main class="flex-1 px-5 lg:px-8 pb-28 lg:pb-10 pt-2">
         <router-view v-slot="{ Component }">
@@ -55,6 +55,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import apiClient from "../api/client";
 import SideLink from "./SideLink.vue";
+const logo = import.meta.env.BASE_URL + "logo.png";
 import Icon from "./Icon.vue";
 
 const links = [

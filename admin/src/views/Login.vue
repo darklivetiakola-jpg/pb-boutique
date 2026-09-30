@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-page flex items-center justify-center px-4">
     <div class="w-full max-w-sm bg-paper rounded-3xl shadow-soft border border-line p-8 animate-popin">
       <div class="flex flex-col items-center mb-8">
-        <img src="/logo.png" alt="PB" class="w-14 h-14 rounded-xl mb-4" />
+        <img :src="logo" alt="PB" class="w-14 h-14 rounded-xl mb-4" />
         <h1 class="text-2xl font-bold tracking-tight">Administration</h1>
         <p class="text-muted text-sm">PB Boutique Hommes</p>
       </div>
@@ -20,6 +20,7 @@
 </template>
 
 <script setup>
+const logo = import.meta.env.BASE_URL + "logo.png";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";

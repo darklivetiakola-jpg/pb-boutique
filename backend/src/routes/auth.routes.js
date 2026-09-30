@@ -1,8 +1,8 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { register, login, logout, me, googleAuth } from "../controllers/auth.controller.js";
+import { register, login, logout, me, googleAuth, changePassword } from "../controllers/auth.controller.js";
 import { validateBody } from "../middleware/validate.js";
-import { registerSchema, loginSchema } from "../validators/auth.validator.js";
+import { registerSchema, loginSchema, changePasswordSchema } from "../validators/auth.validator.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
@@ -20,6 +20,8 @@ router.post("/register", validateBody(registerSchema), register);
 router.post("/login", loginLimiter, validateBody(loginSchema), login);
 router.post("/google", loginLimiter, googleAuth);
 router.post("/logout", logout);
+const passwordLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 8, message: { error: "Trop d'essais, réessayez dans quelques minutes." }, standardHeaders: true, legacyHeaders: false });
+router.post("/change-password", requireAuth, passwordLimiter, validateBody(changePasswordSchema), changePassword);
 router.get("/me", requireAuth, me);
 
 export default router;

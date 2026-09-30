@@ -96,3 +96,35 @@ export async function me(req, res) {
   if (!user) return res.status(404).json({ error: "Utilisateur introuvable." });
   res.json(publicUser(user));
 }
+
+/**
+ * Changement de mot de passe (utilisateur connecté).
+ * Vérifie l'ancien mot de passe (400 et non 401 : la session reste valide),
+ * révoque les autres sessions puis rouvre celle-ci.
+ */
+export async function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  const user = await prisma.user.findUnique({ where: { id: req.user.sub } });
+  if (!user) return res.status(404).json({ error: "Compte introuvable." });
+
+  if (user.passwordHash) {
+    if (!currentPassword || !(await bcrypt.compare(currentPassword, user.passwordHash))) {
+      return res.status(400).json({ error: "Le mot de passe actuel est incorrect." });
+    }
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ error: "Le nouveau mot de passe doit être différent de l'ancien." });
+    }
+  }
+  if (newPassword === "ChangeMoi123!") {
+    return res.status(400).json({ error: "Choisissez un mot de passe personnel (pas celui de démonstration)." });
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: user.id }, data: { passwordHash } }),
+    prisma.refreshToken.deleteMany({ where: { userId: user.id } }),
+  ]);
+
+  setAuthCookies(res, signAccessToken(user), await issueRefreshToken(user));
+  res.json({ ok: true });
+}
