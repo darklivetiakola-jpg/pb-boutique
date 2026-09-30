@@ -3,38 +3,27 @@
   <header class="header">
     <div class="container">
       <div class="header-inner">
-        <router-link to="/" class="logo"><img src="/logo.png" alt="PB Boutique Hommes"/></router-link>
+        <router-link to="/" class="logo" aria-label="PB Boutique Hommes — accueil"><img src="/logo.png" alt="PB Boutique Hommes"/></router-link>
 
-        <nav class="main-nav">
+        <nav class="main-nav" aria-label="Catégories">
           <router-link to="/" exact-active-class="active">Accueil</router-link>
-          <router-link
-            v-for="c in categories" :key="c.slug"
-            :to="`/categorie/${c.slug}`"
-            :class="{ active: route.params.slug === c.slug }"
-          >{{ c.label }}</router-link>
+          <router-link v-for="c in categories" :key="c.slug" :to="`/categorie/${c.slug}`" :class="{ active: route.params.slug === c.slug }">{{ c.label }}</router-link>
         </nav>
 
         <div class="header-actions">
-          <div style="position:relative;display:flex;align-items:center;gap:6px;flex:1;max-width:220px;">
-            <input
-              v-model="search" @keydown.enter="doSearch"
-              type="text" placeholder="Rechercher…"
-              style="width:100%;padding:6px 12px 6px 30px;border-radius:var(--r-full);border:1px solid var(--border);background:var(--bg2);font-size:0.78rem;font-family:inherit;color:var(--ink);outline:none;"
-            />
-            <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:10px;font-size:0.72rem;color:var(--ink3);pointer-events:none;"></i>
-          </div>
-
-          <button class="hact" title="Thème" @click="toggleTheme">
-            <i class="fa-solid" :class="isDark ? 'fa-moon' : 'fa-sun'"></i>
+          <label class="hsearch">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input v-model="search" @keydown.enter="doSearch" type="search" placeholder="Rechercher…" enterkeyhint="search" aria-label="Rechercher un produit" />
+          </label>
+          <button class="hact hact-theme" :title="isDark ? 'Mode clair' : 'Mode sombre'" :aria-label="isDark ? 'Mode clair' : 'Mode sombre'" @click="toggleTheme">
+            <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
           </button>
-          <router-link to="/compte" class="hact" title="Mon compte" style="text-decoration:none;">
-            <i class="fa-regular fa-user"></i>
-          </router-link>
-          <button class="hact" title="Favoris" style="position:relative;">
+          <router-link to="/compte" class="hact hact-user" aria-label="Mon compte"><i class="fa-regular fa-user"></i></router-link>
+          <router-link to="/favoris" class="hact" aria-label="Mes favoris">
             <i class="fa-regular fa-heart"></i>
             <span v-if="cart.wishlist.length" class="hact-badge">{{ cart.wishlist.length }}</span>
-          </button>
-          <router-link to="/panier" class="hact hact-cart" title="Mon panier" aria-label="Mon panier" style="text-decoration:none;position:relative;">
+          </router-link>
+          <router-link to="/panier" class="hact hact-cart" aria-label="Mon panier">
             <IconBag />
             <span v-if="cart.itemsCount" class="cart-count">{{ cart.itemsCount }}</span>
           </router-link>
@@ -43,9 +32,16 @@
       </div>
     </div>
   </header>
-  <nav class="mmenu" :class="{ open: menuOpen }" aria-label="Menu principal" @click="menuOpen = false">
-    <router-link v-for="c in categories" :key="c.slug" :to="`/categorie/${c.slug}`">{{ c.label }} <i class="fa-solid fa-chevron-right" style="font-size:.9rem;color:var(--ink3)"></i></router-link>
-    <router-link to="/compte">Mon compte <i class="fa-solid fa-chevron-right" style="font-size:.9rem;color:var(--ink3)"></i></router-link>
+
+  <nav class="mmenu" :class="{ open: menuOpen }" aria-label="Menu principal">
+    <label class="hsearch hsearch-m">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input v-model="search" @keydown.enter="doSearch" type="search" placeholder="Rechercher un produit" enterkeyhint="search" />
+    </label>
+    <router-link v-for="c in categories" :key="c.slug" :to="`/categorie/${c.slug}`" @click="menuOpen = false">{{ c.label }}<i class="fa-solid fa-chevron-right"></i></router-link>
+    <router-link to="/favoris" @click="menuOpen = false">Mes favoris<i class="fa-solid fa-chevron-right"></i></router-link>
+    <router-link to="/compte" @click="menuOpen = false">Mon compte<i class="fa-solid fa-chevron-right"></i></router-link>
+    <button class="mmenu-theme" @click="toggleTheme"><i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i> {{ isDark ? "Mode clair" : "Mode sombre" }}</button>
   </nav>
 </template>
 
@@ -64,6 +60,7 @@ const search = ref("");
 const isDark = ref(false);
 const menuOpen = ref(false);
 watch(() => route.fullPath, () => { menuOpen.value = false; });
+watch(menuOpen, (v) => { document.body.style.overflow = v ? "hidden" : ""; });
 
 const categories = [
   { slug: "chemises", label: "Chemises" },

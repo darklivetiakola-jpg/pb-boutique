@@ -115,7 +115,7 @@ function initGoogleButtons() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   google.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredential });
   [googleBtnLogin, googleBtnRegister].forEach(elRef => {
-    if (elRef.value) google.accounts.id.renderButton(elRef.value, { theme: "outline", size: "large", width: 280, locale: "fr" });
+    if (elRef.value) google.accounts.id.renderButton(elRef.value, { theme: "outline", size: "large", width: Math.min(400, elRef.value.parentElement?.clientWidth || 300), locale: "fr" });
   });
 }
 
