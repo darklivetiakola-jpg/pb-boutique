@@ -76,9 +76,22 @@ export async function createProduct(req, res) {
 
 export async function updateProduct(req, res) {
   const { id } = req.params;
-  const { images } = req.body;
+  const { images, categorySlug } = req.body;
   const data = { ...req.body };
-  for (const k of ["images", "variants", "id", "gallery", "coverImage", "category", "totalStock", "createdAt", "updatedAt", "slug"]) delete data[k];
+  for (const k of ["images", "variants", "id", "gallery", "coverImage", "category", "categorySlug", "discountPct", "totalStock", "createdAt", "updatedAt", "slug"]) delete data[k];
+  
+  // categorySlug vient de l'admin (ex: "pantalons") -> il faut le convertir
+  // en categoryId, la vraie colonne attendue par Prisma.
+  if (categorySlug !== undefined) {
+    if (categorySlug) {
+      const cat = await prisma.category.findUnique({ where: { slug: categorySlug } });
+      if (!cat) return res.status(400).json({ error: "Catégorie inconnue." });
+      data.categoryId = cat.id;
+    } else {
+      data.categoryId = null;
+    }
+  }
+  
   // Si "images" (liste d'URL) est envoyé, la galerie est remplacée dans l'ordre reçu
   if (Array.isArray(images)) {
     data.images = { deleteMany: {}, create: images.map((url, i) => ({ url, position: i })) };
