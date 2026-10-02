@@ -29,14 +29,6 @@
       </button>
     </section>
 
-    <!-- FEATURE STRIP -->
-    <div class="feature-strip">
-      <div class="feat-item"><div class="feat-icon"><i class="fa-solid fa-truck-fast"></i></div><div class="feat-text"><strong>Livraison 48h</strong><span>Abidjan et intérieur du pays</span></div></div>
-      <div class="feat-item"><div class="feat-icon"><i class="fa-solid fa-mobile-screen"></i></div><div class="feat-text"><strong>Mobile Money</strong><span>Wave · Orange · MTN · Moov</span></div></div>
-      <div class="feat-item"><div class="feat-icon"><i class="fa-solid fa-rotate-left"></i></div><div class="feat-text"><strong>Échange gratuit</strong><span>7 jours sans condition</span></div></div>
-      <div class="feat-item"><div class="feat-icon"><i class="fa-brands fa-whatsapp"></i></div><div class="feat-text"><strong>Conseil style</strong><span>Sur WhatsApp</span></div></div>
-    </div>
-
     <!-- CATEGORIES -->
     <section class="section" id="categories">
       <div class="container">

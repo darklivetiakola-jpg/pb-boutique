@@ -357,3 +357,8 @@ img { max-width: 100%; }
 .origin-text { display: flex; flex-direction: column; justify-content: center; gap: 0; padding: clamp(28px, 5vw, 64px); }
 .origin-title { margin: 14px 0 16px; }
 @media (max-width: 720px) { .origin-wrap { grid-template-columns: 1fr; } .origin-img { min-height: 260px; } }
+
+/* [mobile] icônes du haut retirées */
+@media (max-width: 720px) {
+  .header-actions a[href="/favoris"], .header-actions .hact-cart { display: none !important; }
+}
