@@ -91,7 +91,7 @@ export async function listOrders(req, res) {
   const isStaff = ["ADMIN", "STAFF"].includes(req.user.role);
   const orders = await prisma.order.findMany({
     where: isStaff ? {} : { userId: req.user.sub },
-    include: { items: true },
+    include: { items: true, payment: true },
     orderBy: { createdAt: "desc" },
   });
   res.json(orders);

@@ -34,7 +34,9 @@ const checkout = useCheckoutStore();
 const products = useProductsStore();
 
 onMounted(() => {
-  document.documentElement.setAttribute("data-theme", "dark"); // thème sombre verrouillé (identité noir & or)
+  const t = localStorage.getItem("pb_theme") === "light" ? "light" : "dark"; // sombre par défaut
+  document.documentElement.setAttribute("data-theme", t);
+  document.documentElement.style.colorScheme = t;
   products.fetchAll();
 });
 </script>

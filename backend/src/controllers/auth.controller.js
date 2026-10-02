@@ -7,7 +7,7 @@ import { signAccessToken, issueRefreshToken, setAuthCookies, clearAuthCookies } 
 const googleClient = new OAuth2Client(env.googleClientId);
 
 function publicUser(user) {
-  return { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone };
+  return { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone, address: user.address, city: user.city, createdAt: user.createdAt, hasPassword: Boolean(user.passwordHash) };
 }
 
 export async function register(req, res) {
@@ -127,4 +127,14 @@ export async function changePassword(req, res) {
 
   setAuthCookies(res, signAccessToken(user), await issueRefreshToken(user));
   res.json({ ok: true });
+}
+
+/** Mise à jour du profil (nom, téléphone, adresse, ville). L'email et le rôle ne sont jamais modifiables ici. */
+export async function updateMe(req, res) {
+  const { firstName, lastName, phone, address, city } = req.body;
+  const user = await prisma.user.update({
+    where: { id: req.user.sub },
+    data: { firstName, lastName, phone: phone || null, address: address || null, city: city || "Abidjan" },
+  });
+  res.json(publicUser(user));
 }

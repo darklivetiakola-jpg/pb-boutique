@@ -21,3 +21,11 @@ export const changePasswordSchema = z.object({
     .regex(/[A-Za-z]/, "Ajoutez au moins une lettre")
     .regex(/\d/, "Ajoutez au moins un chiffre"),
 });
+
+export const updateProfileSchema = z.object({
+  firstName: z.string().trim().min(1, "Prénom requis").max(80),
+  lastName: z.string().trim().min(1, "Nom requis").max(80),
+  phone: z.string().trim().max(20).regex(/^[0-9+\s().-]*$/, "Numéro invalide").optional().or(z.literal("")),
+  address: z.string().trim().max(200).optional().or(z.literal("")),
+  city: z.string().trim().max(80).optional().or(z.literal("")),
+}).strict();
