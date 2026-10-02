@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Home from "../views/Home.vue";
+import Discover from "../views/Discover.vue";
 import Category from "../views/Category.vue";
 import ProductDetail from "../views/ProductDetail.vue";
 import Account from "../views/Account.vue";
@@ -10,6 +11,7 @@ import Confirmation from "../views/Confirmation.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home },
+  { path: "/decouvrir", name: "discover", component: Discover },
   { path: "/categorie/:slug", name: "category", component: Category },
   { path: "/produit/:id", name: "product", component: ProductDetail },
   { path: "/favoris", name: "favorites", component: Favorites },

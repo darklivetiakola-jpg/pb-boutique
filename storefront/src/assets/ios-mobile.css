@@ -1,0 +1,41 @@
+/* =====================================================================
+   HABILLAGE MOBILE "iOS" — header translucide, cartes douces, or partout
+   (chargé après theme.css ; ne s'applique qu'aux écrans ≤ 720 px)
+   ===================================================================== */
+.hact-search { display: none; }
+@media (max-width: 720px) {
+  /* En-tête : verre dépoli noir, logo + recherche + menu (favoris/panier sont dans les onglets) */
+  .header { background: rgba(10, 10, 10, .78); -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); border-bottom-color: rgba(255, 255, 255, .06); }
+  .header-actions a[href="/favoris"], .header-actions .hact-cart { display: none; }
+  .hact-search { display: grid; }
+
+  /* Les boutons flottants passent au-dessus de la barre d'onglets */
+  .whatsapp-float { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 14px; width: 48px; height: 48px; }
+  .btt { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); right: 14px; }
+
+  /* Titres façon "Large Title" iOS */
+  .sec-title { font-size: 1.7rem; letter-spacing: -0.04em; }
+  .fav-head h1, .cartp-head h1 { font-size: 2.3rem; letter-spacing: -0.045em; font-weight: 800; }
+
+  /* Cartes produit plus douces */
+  .prod-card-img { border-radius: 22px; box-shadow: var(--shadow-1); }
+  .prod-info { padding-top: 12px; }
+  .prod-ship { display: none; }
+  .prod-add { height: 40px; padding: 0; margin-top: 10px; background: rgba(212, 166, 42, .14); color: #E6BB4E; font-weight: 700; }
+  .prod-add:active { background: #D4A62A; color: #111; }
+
+  /* Panier : la barre « Commander » flotte au-dessus des onglets */
+  .cartp { padding-bottom: calc(200px + env(safe-area-inset-bottom, 0px)); }
+  .cartp-bar-m {
+    left: 14px; right: 14px; max-width: 440px; margin: 0 auto; bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    border-radius: 24px; border: 1px solid rgba(255, 255, 255, .09); padding: 10px 10px 10px 20px;
+    background: rgba(24, 24, 27, .8); box-shadow: 0 12px 34px rgba(0, 0, 0, .45);
+  }
+  .cartp-bar-m .btn { height: 48px; border-radius: 99px; background: #D4A62A; color: #111; }
+  .cartp-item { border-radius: 22px; }
+  .cartp-sum { border-radius: 24px; }
+
+  /* Zones tactiles confortables */
+  .hact, .menu-toggle { width: 44px; height: 44px; }
+  .btn, .cta { min-height: 48px; }
+}

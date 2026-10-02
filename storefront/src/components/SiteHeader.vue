@@ -24,6 +24,9 @@
             <IconBag />
             <span v-if="cart.itemsCount" class="cart-count">{{ cart.itemsCount }}</span>
           </router-link>
+          <router-link to="/decouvrir" class="hact hact-search" aria-label="Rechercher">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </router-link>
           <button class="menu-toggle" :class="{ open: menuOpen }" aria-label="Menu" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen"><span></span><span></span><span></span></button>
         </div>
       </div>
@@ -68,7 +71,11 @@ const categories = [
 
 
 function doSearch() {
-  if (search.value.trim()) toast.show(`Recherche : "${search.value.trim()}"`);
+  const v = search.value.trim();
+  if (!v) return;
+  router.push({ path: "/decouvrir", query: { q: v } });
+  search.value = "";
+  menuOpen.value = false;
 }
 
 onMounted(() => {
