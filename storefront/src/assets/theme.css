@@ -362,3 +362,8 @@ img { max-width: 100%; }
 @media (max-width: 720px) {
   .header-actions a[href="/favoris"], .header-actions .hact-cart { display: none !important; }
 }
+
+/* [mobile] grille produits 2 colonnes */
+@media (max-width: 720px) {
+  .prod-grid, .cat-prod-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 12px; }
+}

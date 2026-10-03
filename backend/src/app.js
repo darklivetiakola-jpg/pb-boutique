@@ -81,13 +81,23 @@ app.use("/api/uploads", uploadsRoutes);
 const ROOT = path.resolve(process.cwd(), "..");
 const shopDist = path.join(ROOT, "storefront", "dist");
 const adminDist = path.join(ROOT, "admin", "dist");
+// Cache : index.html jamais mis en cache (sinon un ancien index réclame des fichiers qui n'existent plus), fichiers /assets/ éternels
+const staticOpts = {
+  setHeaders: (res, file) => {
+    if (/index\.html$/.test(file)) res.setHeader("Cache-Control", "no-cache");
+    else if (/[\\/]assets[\\/]/.test(file)) res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    else res.setHeader("Cache-Control", "public, max-age=3600");
+  },
+};
+const sendIndex = (dir, res) => { res.setHeader("Cache-Control", "no-cache"); res.sendFile(path.join(dir, "index.html")); };
 if (fs.existsSync(adminDist)) {
-  app.use("/admin", express.static(adminDist, { maxAge: "1h" }));
-  app.get("/admin/*", (req, res) => res.sendFile(path.join(adminDist, "index.html")));
+  app.use("/admin", express.static(adminDist, staticOpts));
+  // un fichier manquant (avec extension) renvoie 404, jamais la page HTML
+  app.get("/admin/*", (req, res, next) => (/\.[a-z0-9]+$/i.test(req.path) ? next() : sendIndex(adminDist, res)));
 }
 if (fs.existsSync(shopDist)) {
-  app.use(express.static(shopDist, { maxAge: "1h" }));
-  app.get(/^\/(?!api\/|uploads\/|admin(\/|$)).*/, (req, res) => res.sendFile(path.join(shopDist, "index.html")));
+  app.use(express.static(shopDist, staticOpts));
+  app.get(/^\/(?!api\/|uploads\/|admin(\/|$))[^.]*$/, (req, res) => sendIndex(shopDist, res));
 }
 
 app.use(notFound);

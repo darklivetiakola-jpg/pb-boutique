@@ -4,7 +4,7 @@ import { requireAuth, requireRole, attachUserIfPresent } from "../middleware/aut
 
 const router = Router();
 
-router.post("/checkout", attachUserIfPresent, checkout);
+router.post("/checkout", requireAuth, checkout);   // commande réservée aux comptes connectés
 router.get("/", requireAuth, listOrders);
 router.patch("/:id/status", requireAuth, requireRole("ADMIN", "STAFF"), updateOrderStatus);
 

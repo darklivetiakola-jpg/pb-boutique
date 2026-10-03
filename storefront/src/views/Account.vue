@@ -7,6 +7,8 @@
         <p>{{ tab === "login" ? "Connectez-vous pour suivre vos commandes et retrouver vos favoris." : "Un compte pour commander plus vite et suivre vos livraisons." }}</p>
       </div>
 
+      <div v-if="route.query.redirect" class="banner ok"><i class="fa-solid fa-bag-shopping"></i>Connectez-vous ou créez un compte pour finaliser votre commande. Votre panier est conservé.</div>
+
       <div class="seg" role="tablist">
         <button role="tab" :aria-selected="tab === 'login'" :class="{ on: tab === 'login' }" @click="tab = 'login'; error = ''">Connexion</button>
         <button role="tab" :aria-selected="tab === 'register'" :class="{ on: tab === 'register' }" @click="tab = 'register'; error = ''">Inscription</button>
@@ -199,6 +201,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import { useCartStore } from "../stores/cart";
 import { useToastStore } from "../stores/toast";
@@ -206,6 +209,12 @@ import apiClient from "../api/client";
 
 const WHATSAPP = "2250700000000"; // ← remplacez par le vrai numéro (format international, sans +)
 const auth = useAuthStore(), cart = useCartStore(), toast = useToastStore();
+const route = useRoute(), router = useRouter();
+// Après connexion, retour là où le client voulait aller (ex. finaliser sa commande)
+function afterAuth() {
+  const r = route.query.redirect;
+  if (typeof r === "string" && r.startsWith("/") && !r.startsWith("//")) router.push(r);
+}
 
 const tab = ref("login"), error = ref(""), busy = ref(false), show = ref(false);
 const view = ref("home"), sel = ref(null), confirmOut = ref(false);
@@ -250,7 +259,7 @@ const apiError = (e, fb) => e.response?.data?.details?.newPassword?.[0] || e.res
 
 async function doLogin() {
   error.value = ""; busy.value = true;
-  try { await auth.login(loginForm.email, loginForm.password); await loadOrders(); }
+  try { await auth.login(loginForm.email, loginForm.password); await loadOrders(); afterAuth(); }
   catch (e) { error.value = apiError(e, "Email ou mot de passe incorrect."); }
   finally { busy.value = false; }
 }
@@ -258,7 +267,7 @@ async function doRegister() {
   error.value = "";
   if (registerForm.password.length < 8) { error.value = "Le mot de passe doit contenir au moins 8 caractères."; return; }
   busy.value = true;
-  try { await auth.register({ ...registerForm, phone: registerForm.phone || undefined }); await loadOrders(); }
+  try { await auth.register({ ...registerForm, phone: registerForm.phone || undefined }); await loadOrders(); afterAuth(); }
   catch (e) { error.value = apiError(e, "Impossible de créer le compte."); }
   finally { busy.value = false; }
 }
@@ -302,7 +311,7 @@ async function loadOrders() {
 let gInit = false;
 async function handleGoogle(response) {
   error.value = "";
-  try { await auth.loginWithGoogle(response.credential); await loadOrders(); }
+  try { await auth.loginWithGoogle(response.credential); await loadOrders(); afterAuth(); }
   catch (e) { error.value = apiError(e, "Connexion Google impossible."); }
 }
 function renderGoogle() {

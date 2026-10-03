@@ -1,6 +1,14 @@
 import { defineStore } from "pinia";
 import apiClient from "../api/client";
 import { useCartStore } from "./cart";
+import { useAuthStore } from "./auth";
+import { useToastStore } from "./toast";
+
+async function goLogin(msg = "Créez un compte ou connectez-vous pour commander.") {
+  useToastStore().show(msg);
+  const { default: router } = await import("../router");
+  router.push({ path: "/compte", query: { redirect: router.currentRoute.value.fullPath } });
+}
 
 export const useCheckoutStore = defineStore("checkout", {
   state: () => ({
@@ -14,6 +22,15 @@ export const useCheckoutStore = defineStore("checkout", {
     openModal() {
       const cart = useCartStore();
       if (!cart.items.length) return false;
+      const auth = useAuthStore();
+      if (!auth.user) {   // commande réservée aux comptes : on vérifie la session, sinon direction connexion
+        (async () => {
+          if (!auth.ready) await auth.fetchMe();
+          if (auth.user) { this.open = true; this.error = ""; this.confirmation = null; this.method = "mobile_money"; }
+          else goLogin();
+        })();
+        return true;
+      }
       this.open = true; this.error = ""; this.confirmation = null; this.method = "mobile_money";
       return true;
     },
@@ -24,7 +41,7 @@ export const useCheckoutStore = defineStore("checkout", {
       this.submitting = true; this.error = "";
       try {
         const { data } = await apiClient.post("/orders/checkout", {
-          customer: { name: form.name, phone: form.phone, address: form.address },
+          customer: { name: form.name, phone: form.phone, address: form.address, email: useAuthStore().user?.email, city: useAuthStore().user?.city || undefined },
           payment_method: this.method,
           items: cart.items.map(i => ({ id: i.id, qty: i.qty, size: i.size || undefined })),
         });
@@ -35,6 +52,7 @@ export const useCheckoutStore = defineStore("checkout", {
         this.confirmation = { ref: data.ref, total: data.total };
         cart.clear();
       } catch (err) {
+        if (err.response?.status === 401) { this.open = false; goLogin("Votre session a expiré. Reconnectez-vous pour commander."); return; }
         this.error = err.response?.data?.error || "Une erreur est survenue.";
       } finally {
         this.submitting = false;

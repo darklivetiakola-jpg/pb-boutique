@@ -44,10 +44,18 @@
 import { reactive } from "vue";
 import { useCartStore } from "../stores/cart";
 import { useCheckoutStore } from "../stores/checkout";
+import { useAuthStore } from "../stores/auth";
 
 const cart = useCartStore();
 const checkout = useCheckoutStore();
-const form = reactive({ name: "", phone: "", address: "" });
+const auth = useAuthStore();
+// Les informations du compte sont préremplies : le client n'a rien à retaper
+const u = auth.user || {};
+const form = reactive({
+  name: `${u.firstName || ""} ${u.lastName || ""}`.trim(),
+  phone: u.phone || "",
+  address: [u.address, u.city].filter(Boolean).join(", "),
+});
 
 function fmt(n) { return Number(n).toLocaleString("fr-FR") + " FCFA"; }
 function submit() { checkout.submit(form); }

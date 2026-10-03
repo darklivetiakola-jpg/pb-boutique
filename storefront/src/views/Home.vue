@@ -36,26 +36,20 @@
           <h2 class="sec-title">Explorez la collection.</h2>
           <p class="sec-sub">Chaque pièce pensée pour la coupe, la matière et la tenue</p>
         </div></div>
-        <div class="cat-grid-clean">
-          <router-link v-for="c in cats" :key="c.slug" :to="`/categorie/${c.slug}`" class="cat-card">
-            <div class="cat-card-bg" :style="{ backgroundImage: `url('${c.img}')` }"></div>
-            <div class="cat-card-overlay"></div>
-            <div class="cat-card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-            <div class="cat-card-info"><div class="cat-card-name">{{ c.name }}</div><div class="cat-card-count">{{ c.tags }}</div></div>
-          </router-link>
+        <div class="vm" aria-label="Nos catégories">
+          <div v-for="(col, ci) in vmCols" :key="ci" class="vm-col" :class="[ci % 2 ? 'down' : 'up', `c${ci}`]">
+            <div class="vm-track">
+              <div v-for="copy in 2" :key="copy" class="vm-set" :aria-hidden="copy === 2 ? 'true' : undefined">
+                <router-link v-for="c in col" :key="c.slug" :to="`/categorie/${c.slug}`" class="vm-tile" :tabindex="copy === 2 ? -1 : undefined">
+                  <span class="vm-bg" :style="{ backgroundImage: `url('${c.img}')` }"></span>
+                  <span class="vm-shade"></span>
+                  <span class="vm-info"><b>{{ c.name }}</b><em>{{ c.tags }}</em></span>
+                  <i class="fa-solid fa-arrow-right vm-go"></i>
+                </router-link>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- COUP DE COEUR -->
-    <section style="padding:0 0 72px;">
-      <div class="container">
-        <div class="sec-header">
-          <div class="sec-header-left"><h2 class="sec-title">Coup de cœur.</h2></div>
-        </div>
-        <div class="prod-scroll-wrap"><div class="prod-scroll">
-          <ProductCard v-for="p in products.items.slice(0, 10)" :key="p.id" :p="p" />
-        </div></div>
       </div>
     </section>
 
@@ -87,7 +81,7 @@
           <router-link to="/categorie/nouveautes" class="btn-text">Voir tout <i class="fa-solid fa-arrow-right"></i></router-link>
         </div>
         <div class="prod-grid">
-          <ProductCard v-for="p in products.items.slice(0, 8)" :key="p.id" :p="p" />
+          <ProductCard v-for="p in products.items.slice(0, 12)" :key="p.id" :p="p" />
         </div>
       </div></div>
     </section>
@@ -123,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import ProductCard from "../components/ProductCard.vue";
 import { useProductsStore } from "../stores/products";
 import { useToastStore } from "../stores/toast";
@@ -161,4 +155,36 @@ function subscribe() {
 }
 
 onMounted(() => products.fetchAll());
+const nCols = ref(typeof window !== "undefined" && window.innerWidth >= 900 ? 3 : 2);
+const vmCols = computed(() => Array.from({ length: nCols.value }, (_, k) => cats.filter((_, i) => i % nCols.value === k)));
+const onResize = () => { nCols.value = window.innerWidth >= 900 ? 3 : 2; };
+onMounted(() => window.addEventListener("resize", onResize));
+onBeforeUnmount(() => window.removeEventListener("resize", onResize));
 </script>
+
+<style>
+/* Catégories : colonnes qui défilent seules (vers le haut / vers le bas), pause au toucher ou au survol */
+.vm { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; height: min(78vh, 620px); overflow: hidden; margin-top: 8px;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(180deg, transparent, #000 10%, #000 90%, transparent); }
+.vm-col { overflow: hidden; min-width: 0; }
+.vm-track { display: flex; flex-direction: column; will-change: transform; animation: vm-up var(--vm-t, 34s) linear infinite; }
+.vm-col.down .vm-track { animation-name: vm-down; --vm-t: 40s; }
+.vm-col.c2 .vm-track { --vm-t: 46s; }
+.vm-set { display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
+@keyframes vm-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes vm-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+.vm:hover .vm-track, .vm:focus-within .vm-track, .vm:active .vm-track { animation-play-state: paused; }
+.vm-tile { position: relative; display: block; flex: none; aspect-ratio: 4 / 5.2; border-radius: 22px; overflow: hidden; background: #151517; box-shadow: var(--shadow-1); }
+.vm-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .6s; }
+.vm-tile:hover .vm-bg { transform: scale(1.05); }
+.vm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, .78)); }
+.vm-info { position: absolute; left: 14px; right: 14px; bottom: 14px; display: grid; gap: 2px; color: #fff; }
+.vm-info b { font-size: 1.15rem; letter-spacing: -0.03em; line-height: 1.15; }
+.vm-info em { font-style: normal; font-size: .74rem; color: rgba(255, 255, 255, .72); }
+.vm-go { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: #D4A62A; color: #111; display: grid; place-items: center; font-size: .8rem; }
+@media (min-width: 900px) { .vm { grid-template-columns: repeat(3, 1fr); gap: 16px; height: 640px; } .vm-set { gap: 16px; padding-bottom: 16px; } }
+@media (prefers-reduced-motion: reduce) {
+  .vm { height: auto; -webkit-mask-image: none; mask-image: none; }
+  .vm-track { animation: none; } .vm-set[aria-hidden="true"] { display: none; }
+}
+</style>
