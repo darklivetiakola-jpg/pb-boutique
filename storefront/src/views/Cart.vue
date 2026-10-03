@@ -26,18 +26,18 @@
         </div>
 
         <ul class="cartp-list">
-          <li v-for="it in cart.items" :key="it.id" class="cartp-item">
+          <li v-for="it in cart.items" :key="it.key || it.id" class="cartp-item">
             <router-link :to="`/produit/${it.id}`" class="cartp-img"><img :src="it.img" :alt="it.name" loading="lazy" /></router-link>
             <div class="cartp-info">
               <router-link :to="`/produit/${it.id}`" class="cartp-name">{{ it.name }}</router-link>
-              <div class="cartp-unit">{{ fmt(it.price) }} l'unité</div>
+              <div class="cartp-unit">{{ fmt(it.price) }}<template v-if="it.size"> · Taille {{ it.size }}</template></div>
               <div class="cartp-ctrl">
                 <div class="cartp-qty" role="group" :aria-label="`Quantité de ${it.name}`">
-                  <button @click="cart.changeQty(it.id, -1)" :disabled="it.qty <= 1" aria-label="Diminuer"><i class="fa-solid fa-minus"></i></button>
+                  <button @click="cart.changeQty(it.key || it.id, -1)" :disabled="it.qty <= 1" aria-label="Diminuer"><i class="fa-solid fa-minus"></i></button>
                   <span>{{ it.qty }}</span>
-                  <button @click="cart.changeQty(it.id, 1)" aria-label="Augmenter"><i class="fa-solid fa-plus"></i></button>
+                  <button @click="cart.changeQty(it.key || it.id, 1)" aria-label="Augmenter"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <button class="cartp-rm" @click="cart.remove(it.id)"><i class="fa-regular fa-trash-can"></i> Retirer</button>
+                <button class="cartp-rm" @click="cart.remove(it.key || it.id)"><i class="fa-regular fa-trash-can"></i> Retirer</button>
               </div>
             </div>
             <div class="cartp-line">{{ fmt(it.price * it.qty) }}</div>

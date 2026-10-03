@@ -20,16 +20,17 @@ export const useCartStore = defineStore("cart", {
       localStorage.setItem("pb_boutique_cart", JSON.stringify(this.items));
       localStorage.setItem("pb_boutique_wl", JSON.stringify(this.wishlist));
     },
-    add(product, toastFn) {
-      const existing = this.items.find(i => i.id === product.id);
+    add(product, toastFn, size = null) {
+      const key = size ? `${product.id}|${size}` : String(product.id);
+      const existing = this.items.find(i => (i.key || String(i.id)) === key);
       if (existing) existing.qty++;
-      else this.items.push({ ...product, qty: 1 });
+      else this.items.push({ ...product, key, size, qty: 1 });
       this.persist();
       toastFn?.(`"${product.name.substring(0, 32)}…" ajouté`);
     },
-    remove(id) { this.items = this.items.filter(i => i.id !== id); this.persist(); },
-    changeQty(id, delta) {
-      const it = this.items.find(i => i.id === id);
+    remove(key) { this.items = this.items.filter(i => (i.key || String(i.id)) !== String(key)); this.persist(); },
+    changeQty(key, delta) {
+      const it = this.items.find(i => (i.key || String(i.id)) === String(key));
       if (it) { it.qty = Math.max(1, it.qty + delta); this.persist(); }
     },
     clear() { this.items = []; this.persist(); },

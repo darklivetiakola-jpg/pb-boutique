@@ -11,16 +11,16 @@
         <i class="fa-solid fa-bag-shopping"></i>
         <p>Votre panier est vide</p>
       </div>
-      <div v-for="it in cart.items" :key="it.id" class="cart-item-row">
+      <div v-for="it in cart.items" :key="it.key || it.id" class="cart-item-row">
         <img class="ci-img" :src="it.img" :alt="it.name"/>
         <div class="ci-body">
           <div class="ci-name">{{ it.name }}</div>
-          <div class="ci-price">{{ fmt(it.price) }}</div>
+          <div class="ci-price">{{ fmt(it.price) }}<span v-if="it.size"> · Taille {{ it.size }}</span></div>
           <div class="ci-row2">
-            <button class="qty-btn" @click="cart.changeQty(it.id, -1)"><i class="fa-solid fa-minus"></i></button>
+            <button class="qty-btn" @click="cart.changeQty(it.key || it.id, -1)"><i class="fa-solid fa-minus"></i></button>
             <span class="qty-val">{{ it.qty }}</span>
-            <button class="qty-btn" @click="cart.changeQty(it.id, 1)"><i class="fa-solid fa-plus"></i></button>
-            <button class="ci-del" @click="cart.remove(it.id)"><i class="fa-regular fa-trash-can"></i></button>
+            <button class="qty-btn" @click="cart.changeQty(it.key || it.id, 1)"><i class="fa-solid fa-plus"></i></button>
+            <button class="ci-del" @click="cart.remove(it.key || it.id)"><i class="fa-regular fa-trash-can"></i></button>
           </div>
         </div>
       </div>

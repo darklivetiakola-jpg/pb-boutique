@@ -26,7 +26,7 @@ export const useCheckoutStore = defineStore("checkout", {
         const { data } = await apiClient.post("/orders/checkout", {
           customer: { name: form.name, phone: form.phone, address: form.address },
           payment_method: this.method,
-          items: cart.items.map(i => ({ id: i.id, qty: i.qty })),
+          items: cart.items.map(i => ({ id: i.id, qty: i.qty, size: i.size || undefined })),
         });
         if (data.payment_url && !data.manual_payment) {
           window.location.href = data.payment_url;
