@@ -1,4 +1,5 @@
 <template>
+  <div class="pd-root">
   <main v-if="p" class="pdx">
     <!-- Galerie : on glisse les photos, un point indique laquelle on voit -->
     <section class="gal">
@@ -62,6 +63,7 @@
     <p>Cet article n’existe plus.</p>
     <router-link to="/decouvrir" class="cta">Retour à la boutique</router-link>
   </main>
+  </div>
 </template>
 
 <script setup>

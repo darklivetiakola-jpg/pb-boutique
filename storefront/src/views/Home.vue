@@ -39,7 +39,7 @@
         <div class="vm" aria-label="Nos catégories">
           <div v-for="(col, ci) in vmCols" :key="ci" class="vm-col" :class="[ci % 2 ? 'down' : 'up', `c${ci}`]">
             <div class="vm-track">
-              <div v-for="copy in 2" :key="copy" class="vm-set" :aria-hidden="copy === 2 ? 'true' : undefined">
+              <div v-for="copy in 2" :key="copy" class="vm-set" :class="{ dup: copy === 2 }">
                 <router-link v-for="c in col" :key="c.slug" :to="`/categorie/${c.slug}`" class="vm-tile" :tabindex="copy === 2 ? -1 : undefined">
                   <span class="vm-bg" :style="{ backgroundImage: `url('${c.img}')` }"></span>
                   <span class="vm-shade"></span>
@@ -185,6 +185,6 @@ onBeforeUnmount(() => window.removeEventListener("resize", onResize));
 @media (min-width: 900px) { .vm { grid-template-columns: repeat(3, 1fr); gap: 16px; height: 640px; } .vm-set { gap: 16px; padding-bottom: 16px; } }
 @media (prefers-reduced-motion: reduce) {
   .vm { height: auto; -webkit-mask-image: none; mask-image: none; }
-  .vm-track { animation: none; } .vm-set[aria-hidden="true"] { display: none; }
+  .vm-track { animation: none; } .vm-set.dup { display: none; }
 }
 </style>

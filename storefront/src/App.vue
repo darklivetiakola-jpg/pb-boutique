@@ -1,7 +1,7 @@
 <template>
   <SiteHeader />
   <router-view v-slot="{ Component, route }">
-    <transition name="page" mode="out-in">
+    <transition name="page">
       <component :is="Component" :key="route.fullPath" />
     </transition>
   </router-view>
@@ -42,6 +42,6 @@ onMounted(() => {
 </script>
 
 <style>
-.page-enter-active, .page-leave-active { transition: opacity 0.2s ease; }
-.page-enter-from, .page-leave-to { opacity: 0; }
+.page-enter-active { transition: opacity 0.22s ease; }
+.page-enter-from { opacity: 0; }
 </style>
