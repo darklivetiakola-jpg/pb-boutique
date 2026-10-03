@@ -1,5 +1,4 @@
 <template>
-  <div class="announce">Livraison en 48h à Abidjan · Paiement Mobile Money<router-link to="/categorie/nouveautes">Voir les nouveautés</router-link></div>
   <header class="header">
     <div class="container">
       <div class="header-inner">

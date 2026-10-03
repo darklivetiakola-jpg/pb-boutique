@@ -36,19 +36,20 @@
           <h2 class="sec-title">Explorez la collection.</h2>
           <p class="sec-sub">Chaque pièce pensée pour la coupe, la matière et la tenue</p>
         </div></div>
-        <div class="vm" aria-label="Nos catégories">
-          <div v-for="(col, ci) in vmCols" :key="ci" class="vm-col" :class="[ci % 2 ? 'down' : 'up', `c${ci}`]">
-            <div class="vm-track">
-              <div v-for="copy in 2" :key="copy" class="vm-set" :class="{ dup: copy === 2 }">
-                <router-link v-for="c in col" :key="c.slug" :to="`/categorie/${c.slug}`" class="vm-tile" :tabindex="copy === 2 ? -1 : undefined">
-                  <span class="vm-bg" :style="{ backgroundImage: `url('${c.img}')` }"></span>
-                  <span class="vm-shade"></span>
-                  <span class="vm-info"><b>{{ c.name }}</b><em>{{ c.tags }}</em></span>
-                  <i class="fa-solid fa-arrow-right vm-go"></i>
-                </router-link>
-              </div>
-            </div>
+        <div class="vs-wrap" aria-label="Nos catégories">
+          <div class="vs" ref="vsEl" @scroll.passive="onVs" @pointerdown="pauseVs" @wheel.passive="pauseVs" @touchstart.passive="pauseVs">
+            <router-link v-for="(c, i) in cats" :key="c.slug" :to="`/categorie/${c.slug}`" class="vs-tile">
+              <span class="vs-bg" :style="{ backgroundImage: `url('${c.img}')` }"></span>
+              <span class="vs-shade"></span>
+              <span class="vs-info">
+                <em>{{ String(i + 1).padStart(2, "0") }} / {{ String(cats.length).padStart(2, "0") }}</em>
+                <b>{{ c.name }}</b>
+                <small>{{ c.tags }}</small>
+                <span class="vs-cta">Découvrir <i class="fa-solid fa-arrow-right"></i></span>
+              </span>
+            </router-link>
           </div>
+          <div class="vs-dots" aria-hidden="true"><i v-for="(c, i) in cats" :key="c.slug" :class="{ on: i === vsIdx }"></i></div>
         </div>
       </div>
     </section>
@@ -155,36 +156,41 @@ function subscribe() {
 }
 
 onMounted(() => products.fetchAll());
-const nCols = ref(typeof window !== "undefined" && window.innerWidth >= 900 ? 3 : 2);
-const vmCols = computed(() => Array.from({ length: nCols.value }, (_, k) => cats.filter((_, i) => i % nCols.value === k)));
-const onResize = () => { nCols.value = window.innerWidth >= 900 ? 3 : 2; };
-onMounted(() => window.addEventListener("resize", onResize));
-onBeforeUnmount(() => window.removeEventListener("resize", onResize));
+const vsEl = ref(null), vsIdx = ref(0);
+let vsTimer = null, vsPausedUntil = 0;
+const isMobile = () => window.innerWidth < 900;
+const tileH = () => { const el = vsEl.value; return el && el.firstElementChild ? el.firstElementChild.offsetHeight + 12 : 1; };
+const onVs = () => { const el = vsEl.value; if (el) vsIdx.value = Math.round(el.scrollTop / tileH()); };
+const pauseVs = () => { vsPausedUntil = Date.now() + 9000; };   // le client reprend la main : l'auto-défilement attend 9 s
+function nextVs() {
+  const el = vsEl.value;
+  if (!el || !isMobile() || document.hidden || Date.now() < vsPausedUntil) return;
+  const next = (vsIdx.value + 1) % cats.length;
+  el.scrollTo({ top: next * tileH(), behavior: "smooth" });
+}
+onMounted(() => { if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) vsTimer = setInterval(nextVs, 3800); });
+onBeforeUnmount(() => clearInterval(vsTimer));
 </script>
 
 <style>
-/* Catégories : colonnes qui défilent seules (vers le haut / vers le bas), pause au toucher ou au survol */
-.vm { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; height: min(78vh, 620px); overflow: hidden; margin-top: 8px;
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(180deg, transparent, #000 10%, #000 90%, transparent); }
-.vm-col { overflow: hidden; min-width: 0; }
-.vm-track { display: flex; flex-direction: column; will-change: transform; animation: vm-up var(--vm-t, 34s) linear infinite; }
-.vm-col.down .vm-track { animation-name: vm-down; --vm-t: 40s; }
-.vm-col.c2 .vm-track { --vm-t: 46s; }
-.vm-set { display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
-@keyframes vm-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
-@keyframes vm-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
-.vm:hover .vm-track, .vm:focus-within .vm-track, .vm:active .vm-track { animation-play-state: paused; }
-.vm-tile { position: relative; display: block; flex: none; aspect-ratio: 4 / 5.2; border-radius: 22px; overflow: hidden; background: #151517; box-shadow: var(--shadow-1); }
-.vm-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .6s; }
-.vm-tile:hover .vm-bg { transform: scale(1.05); }
-.vm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, .78)); }
-.vm-info { position: absolute; left: 14px; right: 14px; bottom: 14px; display: grid; gap: 2px; color: #fff; }
-.vm-info b { font-size: 1.15rem; letter-spacing: -0.03em; line-height: 1.15; }
-.vm-info em { font-style: normal; font-size: .74rem; color: rgba(255, 255, 255, .72); }
-.vm-go { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: #D4A62A; color: #111; display: grid; place-items: center; font-size: .8rem; }
-@media (min-width: 900px) { .vm { grid-template-columns: repeat(3, 1fr); gap: 16px; height: 640px; } .vm-set { gap: 16px; padding-bottom: 16px; } }
-@media (prefers-reduced-motion: reduce) {
-  .vm { height: auto; -webkit-mask-image: none; mask-image: none; }
-  .vm-track { animation: none; } .vm-set.dup { display: none; }
+/* Catégories : une grande image à la fois (défilement vertical automatique sur téléphone), le client peut faire défiler librement */
+.vs-wrap { position: relative; }
+.vs { display: flex; flex-direction: column; gap: 12px; height: min(74svh, 560px); overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 16px; }
+.vs::-webkit-scrollbar { display: none; }
+.vs-tile { position: relative; display: block; flex: 0 0 min(66svh, 470px); scroll-snap-align: start; border-radius: 16px; overflow: hidden; background: #151517; }
+.vs-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .7s; }
+.vs-tile:hover .vs-bg { transform: scale(1.04); }
+.vs-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05) 35%, rgba(0,0,0,.78)); }
+.vs-info { position: absolute; left: 20px; right: 20px; bottom: 22px; display: grid; gap: 4px; color: #fff; }
+.vs-info em { font-style: normal; font-size: .76rem; letter-spacing: .08em; color: #E6BB4E; font-weight: 700; }
+.vs-info b { font-size: clamp(1.9rem, 8vw, 2.4rem); font-weight: 800; letter-spacing: -0.045em; line-height: 1.02; }
+.vs-info small { color: rgba(255,255,255,.75); font-size: .86rem; }
+.vs-cta { margin-top: 12px; justify-self: start; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 99px; background: #fff; color: #111; font-weight: 700; font-size: .88rem; }
+.vs-dots { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 2; pointer-events: none; }
+.vs-dots i { width: 5px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.55); transition: height .25s, background .25s; }
+.vs-dots i.on { height: 20px; background: #fff; }
+@media (min-width: 900px) {
+  .vs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; height: auto; overflow: visible; scroll-snap-type: none; }
+  .vs-tile { flex: none; aspect-ratio: 4 / 5; } .vs-dots { display: none; }
 }
 </style>

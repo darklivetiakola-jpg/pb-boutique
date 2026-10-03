@@ -34,7 +34,7 @@ const checkout = useCheckoutStore();
 const products = useProductsStore();
 
 onMounted(() => {
-  const t = localStorage.getItem("pb_theme") === "light" ? "light" : "dark"; // sombre par défaut
+  const t = localStorage.getItem("pb_theme") === "dark" ? "dark" : "light"; // clair par défaut
   document.documentElement.setAttribute("data-theme", t);
   document.documentElement.style.colorScheme = t;
   products.fetchAll();

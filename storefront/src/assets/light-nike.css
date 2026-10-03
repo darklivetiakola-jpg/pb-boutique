@@ -1,0 +1,75 @@
+/* =====================================================================
+   THÈME CLAIR "grande enseigne" — blanc, noir profond, touche d'or du logo.
+   Chargé en dernier. Le noir reste pour l'en-tête, le pied de page et les boutons d'achat.
+   ===================================================================== */
+[data-theme="light"] {
+  --bg: #FFFFFF; --bg2: #F5F5F5; --surface: #FFFFFF;
+  --border: #E5E5E5; --border2: #CFCFCF;
+  --ink: #111111; --ink2: #5E5E5E; --ink3: #8D8D8D; --ink-inv: #FFFFFF;
+  --link: #8C6A0E;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, .05); --shadow-2: 0 8px 24px rgba(0, 0, 0, .08); --shadow-3: 0 20px 48px rgba(0, 0, 0, .14);
+}
+[data-theme="light"] body { background: #fff; }
+[data-theme="light"] h1, [data-theme="light"] h2, [data-theme="light"] .sec-title { font-weight: 800; letter-spacing: -0.045em; }
+
+/* Boutons : noir franc, l'or apparaît au survol */
+[data-theme="light"] .btn-primary { background: #111; color: #fff; }
+[data-theme="light"] .btn-primary:hover { background: #D4A62A; color: #111; }
+[data-theme="light"] .btn-ghost { border-color: #111; color: #111; }
+[data-theme="light"] .btn-ghost:hover { background: #111; color: #fff; }
+
+/* Produits : image nette, coins discrets, étiquettes noir & or */
+[data-theme="light"] .prod-card-img { border-radius: 12px; background: #F5F5F5; box-shadow: none; }
+[data-theme="light"] .prod-name { font-weight: 600; }
+[data-theme="light"] .filter-chip.active { background: #111; color: #E6BB4E; border-color: #111; }
+
+/* Pages construites en mode sombre : variantes claires lisibles */
+[data-theme="light"] .acc .back { color: #8C6A0E; }
+[data-theme="light"] .acc .chip.ok { background: #E6F6EC; color: #137A3F; }
+[data-theme="light"] .acc .chip.warn { background: #FFF3D6; color: #8C6A0E; }
+[data-theme="light"] .acc .chip.bad { background: #FDE8E8; color: #C62828; }
+[data-theme="light"] .acc .banner.ok { background: #E6F6EC; color: #137A3F; }
+[data-theme="light"] .acc .banner.bad { background: #FDE8E8; color: #C62828; }
+[data-theme="light"] .acc .cta { background: #111; color: #fff; }
+[data-theme="light"] .acc .cta.ghost { background: #fff; color: #111; border-color: #E5E5E5; }
+[data-theme="light"] .acc .seg button.on { box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
+[data-theme="light"] .pdx .kicker { color: #8C6A0E; }
+[data-theme="light"] .pdx .price em { background: #FFF3D6; color: #8C6A0E; }
+[data-theme="light"] .pdx .sz-h small { color: #C62828; }
+[data-theme="light"] .pdx .sz-row button.on { background: #111; border-color: #111; color: #fff; }
+[data-theme="light"] .pdx .buy .cta { background: #111; color: #fff; }
+[data-theme="light"] .pdx .buy .cta.ok { background: #30D158; color: #06260f; }
+[data-theme="light"] .cartp-bar-m { background: rgba(255, 255, 255, .9); border-color: rgba(0, 0, 0, .08); box-shadow: 0 12px 34px rgba(0, 0, 0, .16); }
+[data-theme="light"] .cartp-bar-m .btn { background: #111; color: #fff; }
+[data-theme="light"] .ios-tabs .ti { color: #6B6B6B; }
+[data-theme="light"] .ios-tabs .ti.on { color: #7A5C0B; }
+[data-theme="light"] .ios-tabs svg.filled { fill: rgba(212, 166, 42, .35); }
+[data-theme="light"] .ios-tabs .bdg { box-shadow: 0 0 0 2px #fff; }
+
+/* Menu mobile : plus de bandeau d'annonce, il démarre sous l'en-tête */
+.mmenu { padding-top: calc(var(--header-h) + 20px); }
+
+/* =====================================================================
+   PIED DE PAGE REPLIABLE (toutes thèmes)
+   ===================================================================== */
+.footer { padding: 26px 0 20px; }
+.fc-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.fc-brand img { height: 44px; width: auto; display: block; border-radius: 6px; }
+.fc-bar .foot-socials { display: flex; gap: 8px; }
+.fc-toggle { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 99px; border: 1px solid #2c2c31; color: #E6BB4E; background: transparent; font-weight: 600; font-size: .85rem; transition: background .2s; }
+.fc-toggle:hover { background: rgba(212, 166, 42, .1); }
+.fc-toggle i { font-size: .72rem; transition: transform .3s; } .fc-toggle i.rot { transform: rotate(180deg); }
+.fc-more { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .38s ease; }
+.fc-more.on { grid-template-rows: 1fr; }
+.fc-inner { overflow: hidden; min-height: 0; }
+.fc-more .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 20px; padding: 28px 0 8px; }
+.fc-more .foot-contact { grid-column: 1 / -1; }
+.footer-bottom { margin-top: 18px; padding-top: 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 899px) { .fc-bar { justify-content: space-between; } .fc-toggle { width: 100%; justify-content: center; order: 3; } }
+@media (min-width: 900px) {
+  .fc-toggle { display: none; }
+  .fc-more { grid-template-rows: 1fr; }
+  .fc-more .footer-grid { grid-template-columns: 1fr 1fr 1.4fr; gap: 40px; padding-top: 32px; }
+  .fc-more .foot-contact { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .fc-more { transition: none; } }

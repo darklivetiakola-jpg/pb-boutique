@@ -181,7 +181,7 @@
               <button :class="{ on: theme === 'dark' }" @click="setTheme('dark')"><div class="pv dark"><i></i><i></i></div><span>Sombre</span></button>
               <button :class="{ on: theme === 'light' }" @click="setTheme('light')"><div class="pv light"><i></i><i></i></div><span>Clair</span></button>
             </div>
-            <p class="muted">Le mode sombre est le thème d’origine de la boutique. Le mode clair est disponible mais moins travaillé.</p>
+            <p class="muted">Le mode clair est le thème par défaut. Le mode sombre reste disponible.</p>
           </template>
         </div>
       </Transition>
@@ -221,7 +221,7 @@ const view = ref("home"), sel = ref(null), confirmOut = ref(false);
 const orders = ref([]), ordersLoading = ref(true);
 const googleBtn = ref(null);
 const msg = reactive({ ok: false, text: "" });
-const theme = ref(localStorage.getItem("pb_theme") || "dark");
+const theme = ref(localStorage.getItem("pb_theme") || "light");
 
 const loginForm = reactive({ email: "", password: "" });
 const registerForm = reactive({ firstName: "", lastName: "", email: "", phone: "", password: "" });
