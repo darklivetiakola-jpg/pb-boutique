@@ -1,3 +1,4 @@
+import { ensureVariants } from "../utils/variants.js";
 import crypto from "crypto";
 import { prisma } from "../utils/prisma.js";
 import { initiatePayment, verifyTransaction, isValidCinetPaySignature } from "../services/cinetpay.service.js";
@@ -26,11 +27,12 @@ export async function checkout(req, res) {
     });
     if (!product) continue;
     const qty = Math.max(1, Number(it.qty) || 1);
-    const variant = product.variants.find(v => v.size === it.size) || product.variants[0];
+    const variants = product.variants.length ? product.variants : await ensureVariants(product);
+    const variant = variants.find(v => v.size === it.size) || variants[0];
     if (!variant) continue;
     cleanItems.push({ product, variant, qty });
   }
-  if (!cleanItems.length) return res.status(422).json({ error: "Panier invalide." });
+  if (!cleanItems.length) return res.status(422).json({ error: "Un article de votre panier n’est plus disponible. Videz le panier puis réessayez." });
 
   const totalAmount = cleanItems.reduce((s, it) => s + it.product.basePrice * it.qty, 0);
 

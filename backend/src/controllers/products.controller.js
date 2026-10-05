@@ -1,3 +1,4 @@
+import { ensureVariants } from "../utils/variants.js";
 import { prisma } from "../utils/prisma.js";
 
 function slugify(str) {
@@ -71,6 +72,7 @@ export async function createProduct(req, res) {
     },
     include: { images: true, variants: true },
   });
+  if (!product.variants.length) product.variants = await ensureVariants(product);
   res.status(201).json(product);
 }
 
