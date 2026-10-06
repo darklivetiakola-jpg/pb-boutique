@@ -17,6 +17,7 @@ const SLOTS = {
   "origin": "Accueil – section « savoir-faire »",
   "cat-chemises": "Catégorie Chemises (carte accueil + bandeau)",
   "cat-polos": "Catégorie Polos",
+  "cat-tee-shirts": "Catégorie Tee-shirts",
   "cat-costumes": "Catégorie Costumes & Blazers",
   "cat-pantalons": "Catégorie Pantalons",
   "cat-accessoires": "Catégorie Accessoires",

@@ -75,6 +75,7 @@ const priceRanges = [
 
 const META = {
   chemises: { eyebrow: "Chemises PB", title: "Chemises &amp;<br/><span>Coupe Impeccable</span>", sub: "Popeline, lin et coton peigné — la base d'un vestiaire homme irréprochable.", heroImg: img("cat-chemises") },
+  "tee-shirts": { eyebrow: "Tee-shirts PB", title: "Tee-shirts,<br/><span>Coton &amp; Basiques</span>", sub: "Coupes ajustées ou oversize, coton épais et finitions soignées — la base de toutes les tenues.", heroImg: img("cat-tee-shirts") },
   polos: { eyebrow: "Polos PB", title: "Polos,<br/><span>Décontracté Chic</span>", sub: "Piqué de coton et maille côtelée, pour un style relâché sans jamais perdre en élégance.", heroImg: img("cat-polos") },
   costumes: { eyebrow: "Costumes & Blazers", title: "Costumes &amp;<br/><span>Blazers Sur Mesure</span>", sub: "Laine mélangée, coupe ajustée — pour les occasions qui comptent.", heroImg: img("cat-costumes") },
   pantalons: { eyebrow: "Pantalons PB", title: "Pantalons,<br/><span>Chino &amp; Costume</span>", sub: "Coupe droite ou ajustée, en coton stretch ou en laine, pour toutes les journées.", heroImg: img("cat-pantalons") },

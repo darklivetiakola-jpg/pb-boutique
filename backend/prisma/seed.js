@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-const CATEGORIES = ["Chemises", "Polos", "Costumes", "Pantalons", "Accessoires"];
+const CATEGORIES = ["Chemises", "Tee-shirts", "Polos", "Costumes", "Pantalons", "Accessoires"];
 
 const PRODUCTS = [
   { name: "Polo Piqué Signature PB", category: "Polos", material: "Coton peigné", price: 28000, compare: 40000, featured: true },

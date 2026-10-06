@@ -143,6 +143,7 @@ const subscribed = ref(false);
 
 const cats = [
   { slug: "chemises", name: "Chemises", tags: "Popeline · Lin · Coton peigné", img: img("cat-chemises") },
+  { slug: "tee-shirts", name: "Tee-shirts", tags: "Coton · Oversize · Basiques", img: img("cat-tee-shirts") },
   { slug: "polos", name: "Polos", tags: "Piqué · Maille côtelée", img: img("cat-polos") },
   { slug: "costumes", name: "Costumes & Blazers", tags: "Laine · Coupe ajustée", img: img("cat-costumes") },
   { slug: "pantalons", name: "Pantalons", tags: "Chino · Costume · Stretch", img: img("cat-pantalons") },

@@ -29,7 +29,7 @@ export async function listProducts(req, res) {
     categorySlug: p.category?.slug || null,
     basePrice: p.basePrice, compareAtPrice: p.compareAtPrice,
     discountPct: p.compareAtPrice ? Math.round((1 - p.basePrice / p.compareAtPrice) * 100) : 0,
-    isFeatured: p.isFeatured,
+    isFeatured: p.isFeatured, status: p.status,
     coverImage: p.images[0]?.url || null,
     totalStock: p.variants.reduce((s, v) => s + v.stock, 0),
   })));
@@ -49,6 +49,7 @@ export async function getProduct(req, res) {
     categorySlug: product.category?.slug || null,
     basePrice: product.basePrice, compareAtPrice: product.compareAtPrice,
     discountPct: product.compareAtPrice ? Math.round((1 - product.basePrice / product.compareAtPrice) * 100) : 0,
+    status: product.status, isFeatured: product.isFeatured,
     coverImage: product.images[0]?.url || null,
     gallery: product.images.map(i => i.url),
     description: product.description, material: product.material, care: product.care,
@@ -59,11 +60,18 @@ export async function getProduct(req, res) {
 }
 
 export async function createProduct(req, res) {
+  const { categorySlug: newSlug } = req.body;
+  let catId = req.body.categoryId || null;
+  if (newSlug) {
+    const cat = await prisma.category.findUnique({ where: { slug: newSlug } });
+    if (!cat) return res.status(400).json({ error: "Catégorie inconnue." });
+    catId = cat.id;
+  }
   const { name, categoryId, description, material, fit, care, origin, basePrice, compareAtPrice, status, isFeatured, images, variants } = req.body;
 
   const product = await prisma.product.create({
     data: {
-      name, slug: slugify(name), categoryId: categoryId || null,
+      name, slug: slugify(name), categoryId: catId,
       description, material, fit, care, origin,
       basePrice, compareAtPrice: compareAtPrice || null,
       status: status || "DRAFT", isFeatured: !!isFeatured,

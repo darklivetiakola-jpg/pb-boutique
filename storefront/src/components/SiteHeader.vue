@@ -62,6 +62,7 @@ watch(menuOpen, (v) => { document.body.style.overflow = v ? "hidden" : ""; });
 const categories = [
   { slug: "chemises", label: "Chemises" },
   { slug: "polos", label: "Polos" },
+  { slug: "tee-shirts", label: "Tee-shirts" },
   { slug: "costumes", label: "Costumes" },
   { slug: "pantalons", label: "Pantalons" },
   { slug: "accessoires", label: "Accessoires" },

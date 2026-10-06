@@ -60,7 +60,7 @@ const q = ref(String(route.query.q || "")), cat = ref("all");
 
 const cats = [
   { key: "all", label: "Tout" }, { key: "new", label: "Nouveautés" }, { key: "chemises", label: "Chemises" },
-  { key: "polos", label: "Polos" }, { key: "costumes", label: "Costumes" }, { key: "pantalons", label: "Pantalons" }, { key: "accessoires", label: "Accessoires" },
+  { key: "polos", label: "Polos" }, { key: "tee-shirts", label: "Tee-shirts" }, { key: "costumes", label: "Costumes" }, { key: "pantalons", label: "Pantalons" }, { key: "accessoires", label: "Accessoires" },
 ];
 const currentLabel = computed(() => cats.find((c) => c.key === cat.value)?.label || "");
 const fmt = (n) => Number(n).toLocaleString("fr-FR") + " FCFA";

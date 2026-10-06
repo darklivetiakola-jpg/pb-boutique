@@ -22,6 +22,7 @@
               <ul>
                 <li><router-link to="/categorie/chemises">Chemises</router-link></li>
                 <li><router-link to="/categorie/polos">Polos</router-link></li>
+                <li><router-link to="/categorie/tee-shirts">Tee-shirts</router-link></li>
                 <li><router-link to="/categorie/costumes">Costumes &amp; Blazers</router-link></li>
                 <li><router-link to="/categorie/pantalons">Pantalons</router-link></li>
                 <li><router-link to="/categorie/accessoires">Accessoires</router-link></li>

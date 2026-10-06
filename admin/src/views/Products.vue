@@ -65,6 +65,10 @@
                 <ImageUpload v-model="form.images" multiple :max="6" />
               </div>
               <input v-model="form.name" required placeholder="Nom du produit" class="input" />
+              <select v-model="form.categorySlug" required class="input">
+                <option value="" disabled>Choisir une catégorie…</option>
+                <option v-for="c in categories" :key="c.id" :value="c.slug">{{ c.name }}</option>
+              </select>
               <div class="grid grid-cols-2 gap-3">
                 <input v-model.number="form.basePrice" required type="number" placeholder="Prix (F CFA)" class="input" />
                 <input v-model.number="form.compareAtPrice" type="number" placeholder="Prix barré (optionnel)" class="input" />
@@ -101,7 +105,8 @@ const loading = ref(true);
 const search = ref("");
 const modalOpen = ref(false);
 const editing = ref(null);
-const form = ref({ name: "", basePrice: null, compareAtPrice: null, material: "", description: "", status: "DRAFT", isFeatured: false, images: [] });
+const categories = ref([]);
+const form = ref({ name: "", categorySlug: "", basePrice: null, compareAtPrice: null, material: "", description: "", status: "DRAFT", isFeatured: false, images: [] });
 
 const filtered = computed(() =>
   products.value.filter(p => p.name.toLowerCase().includes(search.value.toLowerCase()))
@@ -118,17 +123,19 @@ async function load() {
 
 function openCreate() {
   editing.value = null;
-  form.value = { name: "", basePrice: null, compareAtPrice: null, material: "", description: "", status: "DRAFT", isFeatured: false, images: [] };
+  form.value = { name: "", categorySlug: "", basePrice: null, compareAtPrice: null, material: "", description: "", status: "DRAFT", isFeatured: false, images: [] };
   modalOpen.value = true;
 }
 
 async function openEdit(p) {
   editing.value = p;
-  form.value = { ...p, images: p.coverImage ? [p.coverImage] : [] };
+  form.value = { ...p, categorySlug: p.categorySlug || "", status: p.status || "DRAFT", images: p.coverImage ? [p.coverImage] : [] };
   modalOpen.value = true;
   try { // charge toute la galerie du produit
     const { data } = await apiClient.get(`/products/${p.id}`);
     form.value.images = data.gallery || [];
+    form.value.description = data.description || "";
+    form.value.material = data.material || "";
   } catch { /* on garde la photo principale */ }
 }
 
@@ -148,5 +155,9 @@ async function remove(p) {
   load();
 }
 
-onMounted(load);
+async function loadCategories() {
+  try { categories.value = (await apiClient.get("/products/categories")).data; } catch { categories.value = []; }
+}
+
+onMounted(() => { load(); loadCategories(); });
 </script>
