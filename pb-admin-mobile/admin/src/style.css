@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { -webkit-font-smoothing: antialiased; letter-spacing: -0.005em; }
+:focus-visible { outline: 2px solid #0071E3; outline-offset: 2px; }
+
+.card { @apply bg-paper border border-line rounded-2xl shadow-soft; }
+.btn-primary { @apply bg-gold text-white font-semibold rounded-xl px-5 py-2.5 hover:bg-[#0058B0] transition-all active:scale-[0.97]; }
+.btn-outline { @apply bg-page text-ink font-medium rounded-xl px-5 py-2.5 hover:bg-line transition-all active:scale-[0.97]; }
+.input { @apply w-full border border-transparent rounded-xl px-4 py-2.5 bg-page text-[16px] focus:outline-none focus:bg-paper focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all; }
+.badge { @apply text-xs font-semibold px-2.5 py-1 rounded-full; }
+
+.skeleton {
+  background: linear-gradient(90deg, #e9edf3 25%, #f5f7fa 37%, #e9edf3 63%);
+  background-size: 400px 100%;
+  @apply animate-shimmer rounded-lg;
+}
+
+/* Transition de page (motion demandé) */
+.page-enter-active { transition: all 0.35s cubic-bezier(0.16,1,0.3,1); }
+.page-leave-active { transition: all 0.2s ease; position: absolute; width: 100%; }
+.page-enter-from { opacity: 0; transform: translateY(12px); }
+.page-leave-to { opacity: 0; transform: translateY(-8px); }
+
+.list-move { transition: transform 0.4s ease; }
+.modal-enter-active, .modal-leave-active { transition: opacity 0.25s ease; }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
+.modal-content-enter-active { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+.modal-content-enter-from { opacity: 0; transform: scale(0.95) translateY(8px); }
+
+/* ---------- Confort mobile ---------- */
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+.min-h-app { min-height: 100vh; min-height: 100dvh; }
+.tap { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn { @apply tap rounded-full text-muted hover:text-ink hover:bg-page active:scale-95 transition; }
+.chip { @apply shrink-0 text-sm font-medium px-4 py-2 rounded-full border transition-all; }
+.chip-on { @apply bg-ink text-white border-ink; }
+.chip-off { @apply bg-paper border-line text-muted hover:text-ink; }
+.scroll-x { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.scroll-x::-webkit-scrollbar { display: none; }
+/* Pied de formulaire toujours visible dans les feuilles modales */
+.sheet-footer { position: sticky; bottom: 0; background: linear-gradient(to top, #fff 75%, rgba(255,255,255,0)); padding: 14px 0 max(env(safe-area-inset-bottom), 4px); margin-top: 8px; }
+.modal-panel { max-height: 92vh; max-height: 92dvh; }
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
