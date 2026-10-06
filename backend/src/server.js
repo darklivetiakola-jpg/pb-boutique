@@ -23,3 +23,6 @@ app.listen(env.port, () => {
     console.error("Auto-réparation des tailles impossible :", e.message);
   }
 })();
+
+process.on("unhandledRejection", (e) => console.error("unhandledRejection:", e));
+process.on("uncaughtException", (e) => console.error("uncaughtException:", e));

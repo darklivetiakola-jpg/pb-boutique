@@ -7,6 +7,13 @@ function slugify(str) {
     .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+async function uniqueSlug(name) {
+  const base = slugify(name) || "produit";
+  let slug = base, n = 2;
+  while (await prisma.product.findUnique({ where: { slug } })) slug = `${base}-${n++}`;
+  return slug;
+}
+
 export async function listProducts(req, res) {
   const { category, search, all } = req.query;
   const isStaff = req.user && ["ADMIN", "STAFF"].includes(req.user.role);
@@ -71,7 +78,7 @@ export async function createProduct(req, res) {
 
   const product = await prisma.product.create({
     data: {
-      name, slug: slugify(name), categoryId: catId,
+      name, slug: await uniqueSlug(name), categoryId: catId,
       description, material, fit, care, origin,
       basePrice, compareAtPrice: compareAtPrice || null,
       status: status || "DRAFT", isFeatured: !!isFeatured,
