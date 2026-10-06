@@ -207,7 +207,7 @@ import { useCartStore } from "../stores/cart";
 import { useToastStore } from "../stores/toast";
 import apiClient from "../api/client";
 
-const WHATSAPP = "2250700000000"; // ← remplacez par le vrai numéro (format international, sans +)
+const WHATSAPP = "2250556650614"; // ← remplacez par le vrai numéro (format international, sans +)
 const auth = useAuthStore(), cart = useCartStore(), toast = useToastStore();
 const route = useRoute(), router = useRouter();
 // Après connexion, retour là où le client voulait aller (ex. finaliser sa commande)

@@ -12,7 +12,7 @@
   <Toast />
   <BackToTop />
   <MobileTabBar />
-  <a href="https://wa.me/2250700000000?text=Bonjour%20PB%20Boutique%2C%20j%27ai%20une%20question"
+  <a href="https://wa.me/2250556650614?text=Bonjour%20PB%20Boutique%2C%20j%27ai%20une%20question"
      class="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
   </a>

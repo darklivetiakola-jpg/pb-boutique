@@ -62,7 +62,7 @@
           <li><i class="fa-solid fa-shield-halved"></i><div><b>Paiement 100 % sécurisé</b><span>Vos données ne sont jamais partagées.</span></div></li>
           <li><i class="fa-solid fa-truck-fast"></i><div><b>Livraison en 48h</b><span>Suivi par téléphone jusqu'à votre porte.</span></div></li>
           <li><i class="fa-solid fa-rotate-left"></i><div><b>Échange sous 7 jours</b><span>Taille ou modèle : on s'adapte.</span></div></li>
-          <li><i class="fa-brands fa-whatsapp"></i><div><b>Une question ?</b><span><a href="https://wa.me/2250700000000" target="_blank" rel="noopener">Écrivez-nous sur WhatsApp</a></span></div></li>
+          <li><i class="fa-brands fa-whatsapp"></i><div><b>Une question ?</b><span><a href="https://wa.me/2250556650614" target="_blank" rel="noopener">Écrivez-nous sur WhatsApp</a></span></div></li>
         </ul>
       </aside>
     </div>
