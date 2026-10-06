@@ -3,7 +3,7 @@
     <!-- HERO VIDÉO -->
     <section class="hv" ref="hv" @mousemove="spot">
       <video class="hv-video" autoplay muted loop playsinline webkit-playsinline="true" disablepictureinpicture preload="auto"
-             poster="https://images.unsplash.com/photo-1618886614638-80e3c103d31a?w=1920&q=85" ref="vid">
+             :poster="img('hero-poster')" ref="vid">
         <source src="https://assets.mixkit.co/videos/4832/4832-720.mp4" type="video/mp4">
       </video>
       <div class="hv-shade"></div>
@@ -69,7 +69,7 @@
             </div>
             <router-link to="/categorie/nouveautes" class="btn btn-orange">Découvrir <i class="fa-solid fa-arrow-right"></i></router-link>
           </div>
-          <div class="origin-img"><img src="https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=700&q=85" alt="PB Boutique Hommes — savoir-faire"/></div>
+          <div class="origin-img"><img :src="img('origin')" alt="PB Boutique Hommes — savoir-faire"/></div>
         </div>
       </div>
     </section>
@@ -118,6 +118,7 @@
 </template>
 
 <script setup>
+import { img } from "../config/images";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import ProductCard from "../components/ProductCard.vue";
 import { useProductsStore } from "../stores/products";
@@ -141,12 +142,12 @@ function spot(e) {
 const subscribed = ref(false);
 
 const cats = [
-  { slug: "chemises", name: "Chemises", tags: "Popeline · Lin · Coton peigné", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=800&q=80" },
-  { slug: "polos", name: "Polos", tags: "Piqué · Maille côtelée", img: "https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=800&q=80" },
-  { slug: "costumes", name: "Costumes & Blazers", tags: "Laine · Coupe ajustée", img: "https://images.unsplash.com/photo-1618886614638-80e3c103d31a?w=800&q=80" },
-  { slug: "pantalons", name: "Pantalons", tags: "Chino · Costume · Stretch", img: "https://images.unsplash.com/photo-1617113930975-f9c7243ae527?w=800&q=80" },
-  { slug: "accessoires", name: "Accessoires", tags: "Ceintures · Montres · Cravates", img: "https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=800&q=80" },
-  { slug: "nouveautes", name: "Nouveautés", tags: "Les dernières arrivées", img: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=800&q=80" },
+  { slug: "chemises", name: "Chemises", tags: "Popeline · Lin · Coton peigné", img: img("cat-chemises") },
+  { slug: "polos", name: "Polos", tags: "Piqué · Maille côtelée", img: img("cat-polos") },
+  { slug: "costumes", name: "Costumes & Blazers", tags: "Laine · Coupe ajustée", img: img("cat-costumes") },
+  { slug: "pantalons", name: "Pantalons", tags: "Chino · Costume · Stretch", img: img("cat-pantalons") },
+  { slug: "accessoires", name: "Accessoires", tags: "Ceintures · Montres · Cravates", img: img("cat-accessoires") },
+  { slug: "nouveautes", name: "Nouveautés", tags: "Les dernières arrivées", img: img("cat-nouveautes") },
 ];
 
 function subscribe() {

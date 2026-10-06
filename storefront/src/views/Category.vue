@@ -49,6 +49,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { img } from "../config/images";
 import ProductCard from "../components/ProductCard.vue";
 import { useProductsStore } from "../stores/products";
 
@@ -73,12 +74,12 @@ const priceRanges = [
 ];
 
 const META = {
-  chemises: { eyebrow: "Chemises PB", title: "Chemises &amp;<br/><span>Coupe Impeccable</span>", sub: "Popeline, lin et coton peigné — la base d'un vestiaire homme irréprochable.", heroImg: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=1400&q=85" },
-  polos: { eyebrow: "Polos PB", title: "Polos,<br/><span>Décontracté Chic</span>", sub: "Piqué de coton et maille côtelée, pour un style relâché sans jamais perdre en élégance.", heroImg: "https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=1400&q=85" },
-  costumes: { eyebrow: "Costumes & Blazers", title: "Costumes &amp;<br/><span>Blazers Sur Mesure</span>", sub: "Laine mélangée, coupe ajustée — pour les occasions qui comptent.", heroImg: "https://images.unsplash.com/photo-1618886614638-80e3c103d31a?w=1400&q=85" },
-  pantalons: { eyebrow: "Pantalons PB", title: "Pantalons,<br/><span>Chino &amp; Costume</span>", sub: "Coupe droite ou ajustée, en coton stretch ou en laine, pour toutes les journées.", heroImg: "https://images.unsplash.com/photo-1617113930975-f9c7243ae527?w=1400&q=85" },
-  accessoires: { eyebrow: "Accessoires PB", title: "Accessoires,<br/><span>Le Détail Qui Compte</span>", sub: "Ceintures, montres et cravates en cuir et matières nobles — la touche finale d'une tenue réussie.", heroImg: "https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=1400&q=85" },
-  nouveautes: { eyebrow: "Dernières Arrivées", title: "Les Toutes<br/><span>Dernières Pièces</span>", sub: "Fraîchement arrivées en boutique — soyez parmi les premiers à les porter.", heroImg: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=1400&q=85" },
+  chemises: { eyebrow: "Chemises PB", title: "Chemises &amp;<br/><span>Coupe Impeccable</span>", sub: "Popeline, lin et coton peigné — la base d'un vestiaire homme irréprochable.", heroImg: img("cat-chemises") },
+  polos: { eyebrow: "Polos PB", title: "Polos,<br/><span>Décontracté Chic</span>", sub: "Piqué de coton et maille côtelée, pour un style relâché sans jamais perdre en élégance.", heroImg: img("cat-polos") },
+  costumes: { eyebrow: "Costumes & Blazers", title: "Costumes &amp;<br/><span>Blazers Sur Mesure</span>", sub: "Laine mélangée, coupe ajustée — pour les occasions qui comptent.", heroImg: img("cat-costumes") },
+  pantalons: { eyebrow: "Pantalons PB", title: "Pantalons,<br/><span>Chino &amp; Costume</span>", sub: "Coupe droite ou ajustée, en coton stretch ou en laine, pour toutes les journées.", heroImg: img("cat-pantalons") },
+  accessoires: { eyebrow: "Accessoires PB", title: "Accessoires,<br/><span>Le Détail Qui Compte</span>", sub: "Ceintures, montres et cravates en cuir et matières nobles — la touche finale d'une tenue réussie.", heroImg: img("cat-accessoires") },
+  nouveautes: { eyebrow: "Dernières Arrivées", title: "Les Toutes<br/><span>Dernières Pièces</span>", sub: "Fraîchement arrivées en boutique — soyez parmi les premiers à les porter.", heroImg: img("cat-nouveautes") },
 };
 
 const meta = computed(() => META[route.params.slug] || { eyebrow: "", title: "", sub: "", heroImg: "" });
