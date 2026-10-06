@@ -21,7 +21,7 @@ export async function listProducts(req, res) {
   const where = {
     ...(category ? { category: { slug: category } } : {}),
     ...(search ? { name: { contains: search, mode: "insensitive" } } : {}),
-    ...(!(isStaff && all) ? { status: "PUBLISHED" } : {}),
+    ...(!(isStaff && all) ? { status: "PUBLISHED" } : { status: { not: "ARCHIVED" } }),
   };
 
   const products = await prisma.product.findMany({
@@ -118,8 +118,19 @@ export async function updateProduct(req, res) {
 }
 
 export async function deleteProduct(req, res) {
-  await prisma.product.delete({ where: { id: req.params.id } });
-  res.status(204).send();
+  const { id } = req.params;
+  const used = await prisma.orderItem.count({ where: { productId: id } });
+  if (!used) {
+    try {
+      await prisma.product.delete({ where: { id } });
+      return res.json({ deleted: true });
+    } catch (e) {
+      if (e.code === "P2025") return res.status(404).json({ error: "Produit introuvable." });
+      // contrainte (ex. article encore dans un panier) : on archive ci-dessous
+    }
+  }
+  await prisma.product.update({ where: { id }, data: { status: "ARCHIVED", isFeatured: false } });
+  res.json({ archived: true });
 }
 
 export async function updateStock(req, res) {

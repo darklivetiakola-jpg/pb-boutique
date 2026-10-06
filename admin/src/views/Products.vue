@@ -1,16 +1,16 @@
 <template>
   <div class="space-y-5">
-    <div class="flex items-center justify-between">
-      <div class="relative w-72">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="relative w-full sm:w-72">
         <Icon name="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
         <input v-model="search" placeholder="Rechercher un produit…" class="input pl-10" />
       </div>
-      <button @click="openCreate" class="btn-primary flex items-center gap-2">
+      <button @click="openCreate" class="btn-primary flex items-center justify-center gap-2 whitespace-nowrap">
         <Icon name="plus" class="w-4 h-4" /> Nouveau produit
       </button>
     </div>
 
-    <div class="card overflow-hidden">
+    <div class="card overflow-hidden hidden sm:block">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-line text-left text-xs text-muted font-medium">
@@ -48,6 +48,35 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- LISTE MOBILE -->
+    <div class="sm:hidden space-y-3">
+      <div v-if="loading" class="skeleton h-40 w-full"></div>
+      <div v-for="p in filtered" :key="p.id" class="card p-3.5">
+        <div class="flex gap-3">
+          <div class="w-16 h-16 rounded-xl bg-page overflow-hidden shrink-0 grid place-items-center text-muted">
+            <img v-if="p.coverImage" :src="p.coverImage" :alt="p.name" class="w-full h-full object-cover" />
+            <Icon v-else name="image" class="w-6 h-6" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="font-semibold leading-snug break-words">{{ p.name }}</div>
+            <div class="text-xs mt-0.5" :class="p.category ? 'text-muted' : 'text-warn font-medium'">{{ p.category || "Sans catégorie" }}</div>
+            <div class="font-semibold mt-1">{{ fmt(p.basePrice) }} F</div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-line">
+          <div class="flex items-center gap-2">
+            <span class="badge" :class="p.totalStock === 0 ? 'bg-red-50 text-bad' : p.totalStock < 15 ? 'bg-amber-50 text-warn' : 'bg-green-50 text-good'">Stock {{ p.totalStock }}</span>
+            <span class="badge" :class="p.status === 'PUBLISHED' ? 'bg-green-50 text-good' : 'bg-page text-muted'">{{ p.status === 'PUBLISHED' ? 'Publié' : 'Brouillon' }}</span>
+          </div>
+          <div class="flex items-center">
+            <button @click="openEdit(p)" class="p-2.5 rounded-lg text-muted hover:text-ink hover:bg-page" aria-label="Modifier"><Icon name="edit" class="w-5 h-5" /></button>
+            <button @click="remove(p)" class="p-2.5 rounded-lg text-muted hover:text-bad hover:bg-page" aria-label="Supprimer"><Icon name="trash" class="w-5 h-5" /></button>
+          </div>
+        </div>
+      </div>
+      <div v-if="!loading && !filtered.length" class="text-center text-sm text-muted py-8">Aucun produit.</div>
     </div>
 
     <!-- MODAL -->
@@ -151,7 +180,12 @@ async function save() {
 
 async function remove(p) {
   if (!confirm(`Supprimer "${p.name}" ?`)) return;
-  await apiClient.delete(`/products/${p.id}`);
+  try {
+    const { data } = await apiClient.delete(`/products/${p.id}`);
+    if (data?.archived) alert("Ce produit figure dans des commandes : il a été archivé (retiré de la boutique) au lieu d'être supprimé.");
+  } catch {
+    alert("Suppression impossible pour le moment. Réessaie dans un instant.");
+  }
   load();
 }
 
