@@ -944,11 +944,20 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .cat-prod-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
 }
 
-/* ORIGIN STACKED : texte en haut, image en dessous */
-.origin-wrap { display: flex; flex-direction: column; min-height: 0; }
-.origin-text { align-items: center; text-align: center; padding: 56px 32px 40px; }
-.origin-body { max-width: 560px; margin-left: auto; margin-right: auto; }
+/* ORIGIN OVERLAY : texte écrit automatiquement sur l'image */
+.origin-wrap { display: block; position: relative; min-height: clamp(540px, 60vw, 640px); }
+.origin-img { position: absolute; inset: 0; height: auto; min-height: 0; }
+.origin-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+.origin-shade { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,8,10,.62) 0%, rgba(8,8,10,.50) 45%, rgba(8,8,10,.86) 100%); }
+.origin-text { position: relative; z-index: 2; min-height: inherit; justify-content: center; align-items: center; text-align: center; padding: 56px 24px; }
+.origin-kicker { justify-content: center; }
+.origin-title { font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: .02em; line-height: .98; font-size: clamp(2rem, 8.4vw, 5rem); min-height: 2em; margin-bottom: 18px; text-shadow: 0 2px 18px rgba(0,0,0,.45); }
+.origin-title .ot-a, .origin-title .ot-b { display: block; min-height: 1em; }
+.origin-title .ot-b { color: var(--orange); }
+.type-caret { display: inline-block; width: .07em; height: .82em; margin-left: .08em; background: currentColor; vertical-align: -.04em; animation: caretBlink 1s steps(1) infinite; }
+@keyframes caretBlink { 50% { opacity: 0; } }
+.origin-body { max-width: 520px; margin: 0 auto 26px; color: rgba(255,255,255,.88); }
 .origin-stats { justify-content: center; }
+.ostat-lbl { color: rgba(255,255,255,.7); }
 .origin-text .btn { align-self: center; min-width: 240px; justify-content: center; }
-.origin-img { height: clamp(260px, 46vw, 540px); min-height: 0; }
-.origin-img img { object-position: center 35%; }
+@media (prefers-reduced-motion: reduce) { .type-caret { animation: none; } }

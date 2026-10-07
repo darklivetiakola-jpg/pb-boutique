@@ -57,11 +57,16 @@
     <!-- HERITAGE -->
     <section style="padding:0 0 72px;">
       <div class="container">
-        <div class="origin-wrap">
+        <div class="origin-wrap" ref="originEl">
+          <div class="origin-img"><img :src="img('origin')" alt="PB Boutique Hommes — style frais"/></div>
+          <div class="origin-shade"></div>
           <div class="origin-text">
             <div class="origin-kicker"><div class="flag-ci"><span class="f1"></span><span class="f2"></span><span class="f3"></span></div>Fait à Abidjan · Dispo 7j/7</div>
-            <h2 class="origin-title">Le style frais, cool<br/><span>et sans prise de tête</span></h2>
-            <p class="origin-body">Polos, tee-shirts, chemises… des pièces jeunes, fraîches et confortables pour assurer partout, de la fac aux sorties du week-end. Pas de prise de tête : la boutique est dispo 7j/7, commande quand tu veux.</p>
+            <h2 class="origin-title" aria-label="Le style frais, cool, sans prise de tête">
+              <span class="ot-a" aria-hidden="true">{{ typedA }}<i v-if="typingLine === 0" class="type-caret"></i></span>
+              <span class="ot-b" aria-hidden="true">{{ typedB }}<i v-if="typingLine === 1" class="type-caret"></i></span>
+            </h2>
+            <p class="origin-body">Polos, tee-shirts, chemises… des pièces jeunes et fraîches pour assurer partout, de la fac aux sorties du week-end.</p>
             <div class="origin-stats">
               <div><div class="ostat-num">7j/7</div><div class="ostat-lbl">Boutique ouverte<br/>commande à toute heure</div></div>
               <div><div class="ostat-num">48h</div><div class="ostat-lbl">Livraison<br/>Abidjan</div></div>
@@ -69,7 +74,6 @@
             </div>
             <router-link to="/categorie/nouveautes" class="btn btn-orange">Découvrir <i class="fa-solid fa-arrow-right"></i></router-link>
           </div>
-          <div class="origin-img"><img :src="img('origin')" alt="PB Boutique Hommes — savoir-faire"/></div>
         </div>
       </div>
     </section>
@@ -140,6 +144,50 @@ function spot(e) {
   hv.value.style.setProperty("--my", (e.clientY - r.top) + "px");
 }
 const subscribed = ref(false);
+
+// --- Machine à écrire de la section « Fait à Abidjan » ---
+const originEl = ref(null);
+const typedA = ref(""), typedB = ref(""), typingLine = ref(0);
+const TYPE_PHRASES = [
+  ["Le style frais,", "cool, sans prise de tête"],
+  ["Dispo 7j/7,", "commande quand tu veux"],
+  ["Pour ceux qui", "assurent partout"],
+];
+let typingAlive = false, typingTimer = null, typingObs = null;
+const pause = (ms) => new Promise((r) => { typingTimer = setTimeout(r, ms); });
+async function typeInto(target, text, speed) {
+  for (let i = 1; i <= text.length && typingAlive; i++) { target.value = text.slice(0, i); await pause(speed + Math.random() * 40); }
+}
+async function eraseBoth() {
+  while (typingAlive && (typedA.value || typedB.value)) {
+    if (typedB.value) { typingLine.value = 1; typedB.value = typedB.value.slice(0, -1); }
+    else { typingLine.value = 0; typedA.value = typedA.value.slice(0, -1); }
+    await pause(22);
+  }
+}
+async function runTyping() {
+  typedA.value = ""; typedB.value = "";
+  let k = 0;
+  while (typingAlive) {
+    const [a, b] = TYPE_PHRASES[k % TYPE_PHRASES.length];
+    typingLine.value = 0; await typeInto(typedA, a, 70);
+    await pause(250); typingLine.value = 1; await typeInto(typedB, b, 70);
+    await pause(2600);
+    await eraseBoth(); await pause(300); k++;
+  }
+}
+onMounted(() => {
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || !("IntersectionObserver" in window) || !originEl.value) {
+    typedA.value = TYPE_PHRASES[0][0]; typedB.value = TYPE_PHRASES[0][1]; typingLine.value = -1; return;
+  }
+  typingObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting && !typingAlive) { typingAlive = true; runTyping(); }
+    else if (!e.isIntersecting && typingAlive) { typingAlive = false; clearTimeout(typingTimer); }
+  }, { threshold: 0.35 });
+  typingObs.observe(originEl.value);
+});
+onBeforeUnmount(() => { typingAlive = false; clearTimeout(typingTimer); if (typingObs) typingObs.disconnect(); });
 
 const cats = [
   { slug: "chemises", name: "Chemises", tags: "Popeline · Lin · Coton peigné", img: img("cat-chemises") },
