@@ -59,11 +59,11 @@
       <div class="container">
         <div class="origin-wrap">
           <div class="origin-text">
-            <div class="origin-kicker"><div class="flag-ci"><span class="f1"></span><span class="f2"></span><span class="f3"></span></div>Fait à Abidjan</div>
-            <h2 class="origin-title">La rigueur du<br/><span>tailleur ivoirien</span></h2>
-            <p class="origin-body">Chaque pièce PB Boutique Hommes est sélectionnée et contrôlée à Abidjan pour son tombé, sa matière et sa tenue dans le temps — pas de compromis sur la qualité.</p>
+            <div class="origin-kicker"><div class="flag-ci"><span class="f1"></span><span class="f2"></span><span class="f3"></span></div>Fait à Abidjan · Dispo 7j/7</div>
+            <h2 class="origin-title">Le style frais, cool<br/><span>et sans prise de tête</span></h2>
+            <p class="origin-body">Polos, tee-shirts, chemises… des pièces jeunes, fraîches et confortables pour assurer partout, de la fac aux sorties du week-end. Pas de prise de tête : la boutique est dispo 7j/7, commande quand tu veux.</p>
             <div class="origin-stats">
-              <div><div class="ostat-num">100%</div><div class="ostat-lbl">Contrôle qualité<br/>avant expédition</div></div>
+              <div><div class="ostat-num">7j/7</div><div class="ostat-lbl">Boutique ouverte<br/>commande à toute heure</div></div>
               <div><div class="ostat-num">48h</div><div class="ostat-lbl">Livraison<br/>Abidjan</div></div>
               <div><div class="ostat-num">7j</div><div class="ostat-lbl">Échange<br/>gratuit</div></div>
             </div>
