@@ -1,8 +1,8 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { register, login, logout, me, googleAuth, changePassword, updateMe } from "../controllers/auth.controller.js";
+import { verifyEmail, resendCode, register, login, logout, me, googleAuth, changePassword, updateMe } from "../controllers/auth.controller.js";
 import { validateBody } from "../middleware/validate.js";
-import { registerSchema, loginSchema, changePasswordSchema, updateProfileSchema } from "../validators/auth.validator.js";
+import { verifyEmailSchema, resendCodeSchema, registerSchema, loginSchema, changePasswordSchema, updateProfileSchema } from "../validators/auth.validator.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
@@ -16,7 +16,10 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post("/register", validateBody(registerSchema), register);
+const signupLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 12, message: { error: "Trop de tentatives, réessayez dans quelques minutes." }, standardHeaders: true, legacyHeaders: false });
+router.post("/register", signupLimiter, validateBody(registerSchema), register);
+router.post("/verify-email", signupLimiter, validateBody(verifyEmailSchema), verifyEmail);
+router.post("/resend-code", signupLimiter, validateBody(resendCodeSchema), resendCode);
 router.post("/login", loginLimiter, validateBody(loginSchema), login);
 router.post("/google", loginLimiter, googleAuth);
 router.post("/logout", logout);

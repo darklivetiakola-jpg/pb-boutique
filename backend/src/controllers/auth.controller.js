@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../utils/prisma.js";
 import { env } from "../config/env.js";
+import { startSignup, verifySignup, discardSignup, resendSignup, CODE_TTL_MINUTES } from "../services/signup.service.js";
 import { signAccessToken, issueRefreshToken, setAuthCookies, clearAuthCookies } from "../services/token.service.js";
 
 const googleClient = new OAuth2Client(env.googleClientId);
@@ -10,27 +11,58 @@ function publicUser(user) {
   return { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone, address: user.address, city: user.city, createdAt: user.createdAt, hasPassword: Boolean(user.passwordHash) };
 }
 
-export async function register(req, res) {
-  const { firstName, lastName, email, password, phone } = req.body;
+function signupError(e, res) {
+  if (e && e.status) return res.status(e.status).json({ error: e.message });
+  throw e;
+}
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+/** Étape 1 : on enregistre l'inscription en attente et on envoie un code par email (le compte n'existe pas encore). */
+export async function register(req, res) {
+  const { firstName, lastName, password, phone } = req.body;
+  const email = req.body.email.trim().toLowerCase();
+
+  const existing = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   if (existing) return res.status(409).json({ error: "Un compte existe déjà avec cet email." });
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await prisma.user.create({
-    data: { firstName, lastName, email, passwordHash, phone },
-  });
+  try {
+    await startSignup({ email, firstName, lastName, phone: phone || null, passwordHash });
+  } catch (e) { return signupError(e, res); }
+  res.status(202).json({ needsVerification: true, email, expiresInMinutes: CODE_TTL_MINUTES });
+}
+
+/** Étape 2 : le client saisit le code reçu → le compte est créé et il est connecté. */
+export async function verifyEmail(req, res) {
+  const email = req.body.email.trim().toLowerCase();
+  let pending;
+  try { pending = await verifySignup(email, req.body.code); } catch (e) { return signupError(e, res); }
+
+  let user;
+  try {
+    user = await prisma.user.create({
+      data: { firstName: pending.firstName, lastName: pending.lastName, email, passwordHash: pending.passwordHash, phone: pending.phone },
+    });
+  } catch (e) {
+    if (e.code === "P2002") return res.status(409).json({ error: "Un compte existe déjà avec cet email." });
+    throw e;
+  }
+  await discardSignup(email);
 
   const accessToken = signAccessToken(user);
   const refreshToken = await issueRefreshToken(user);
   setAuthCookies(res, accessToken, refreshToken);
-
   res.status(201).json(publicUser(user));
+}
+
+export async function resendCode(req, res) {
+  const email = req.body.email.trim().toLowerCase();
+  try { await resendSignup(email); } catch (e) { return signupError(e, res); }
+  res.json({ ok: true, expiresInMinutes: CODE_TTL_MINUTES });
 }
 
 export async function login(req, res) {
   const { email, password } = req.body;
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findFirst({ where: { email: { equals: String(email).trim(), mode: "insensitive" } } });
 
   // Message volontairement générique (ne pas révéler si l'email existe ou non)
   if (!user || !user.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {

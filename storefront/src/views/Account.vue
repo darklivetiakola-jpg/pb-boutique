@@ -3,8 +3,8 @@
     <!-- ================= NON CONNECTÉ ================= -->
     <section v-if="!auth.user" class="auth">
       <div class="auth-head">
-        <h1>{{ tab === "login" ? "Bon retour." : "Créer un compte." }}</h1>
-        <p>{{ tab === "login" ? "Connectez-vous pour suivre vos commandes et retrouver vos favoris." : "Un compte pour commander plus vite et suivre vos livraisons." }}</p>
+        <h1>{{ tab === "login" ? "Bon retour." : verify.active ? "Vérifiez votre email." : "Créer un compte." }}</h1>
+        <p>{{ tab === "login" ? "Connectez-vous pour suivre vos commandes et retrouver vos favoris." : verify.active ? "Dernière étape : entrez le code reçu pour activer votre compte." : "Un compte pour commander plus vite et suivre vos livraisons." }}</p>
       </div>
 
       <div v-if="route.query.redirect" class="banner ok"><i class="fa-solid fa-bag-shopping"></i>Connectez-vous ou créez un compte pour finaliser votre commande. Votre panier est conservé.</div>
@@ -16,8 +16,8 @@
 
       <div v-if="error" class="banner bad" role="alert"><i class="fa-solid fa-circle-exclamation"></i>{{ error }}</div>
 
-      <div class="gbtn"><div ref="googleBtn"></div></div>
-      <div class="or"><span>ou avec votre email</span></div>
+      <div class="gbtn" v-show="!(tab === 'register' && verify.active)"><div ref="googleBtn"></div></div>
+      <div class="or" v-show="!(tab === 'register' && verify.active)"><span>ou avec votre email</span></div>
 
       <form v-if="tab === 'login'" class="form" @submit.prevent="doLogin" novalidate>
         <label class="fld"><span>Email</span>
@@ -28,7 +28,7 @@
         <button class="cta" :disabled="busy">{{ busy ? "Connexion…" : "Se connecter" }}</button>
       </form>
 
-      <form v-else class="form" @submit.prevent="doRegister" novalidate>
+      <form v-else-if="!verify.active" class="form" @submit.prevent="doRegister" novalidate>
         <div class="two">
           <label class="fld"><span>Prénom</span><input v-model.trim="registerForm.firstName" autocomplete="given-name" placeholder="Prénom" required /></label>
           <label class="fld"><span>Nom</span><input v-model.trim="registerForm.lastName" autocomplete="family-name" placeholder="Nom" required /></label>
@@ -40,6 +40,17 @@
             <button type="button" class="eye" @click="show = !show" :aria-label="show ? 'Masquer' : 'Afficher'"><i class="fa-regular" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i></button></div>
           <div class="meter"><i :style="{ width: strength(registerForm.password).pct + '%', background: strength(registerForm.password).color }"></i></div></label>
         <button class="cta" :disabled="busy">{{ busy ? "Création…" : "Créer mon compte" }}</button>
+      </form>
+
+      <form v-else class="form" @submit.prevent="doVerify" novalidate>
+        <div class="banner ok"><i class="fa-solid fa-envelope"></i><span>Un code à 6 chiffres a été envoyé à <b>{{ verify.email }}</b>. Pensez à vérifier vos spams.</span></div>
+        <label class="fld"><span>Code de vérification</span>
+          <input v-model.trim="verify.code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="••••••" required /></label>
+        <button class="cta" :disabled="busy || verify.code.length !== 6">{{ busy ? "Vérification…" : "Valider mon compte" }}</button>
+        <div class="vlinks">
+          <button type="button" class="linkbtn" :disabled="verify.cooldown > 0 || busy" @click="doResend">{{ verify.cooldown > 0 ? `Renvoyer le code (${verify.cooldown}s)` : "Renvoyer le code" }}</button>
+          <button type="button" class="linkbtn" @click="cancelVerify">Changer d'email</button>
+        </div>
       </form>
 
       <p class="trust"><i class="fa-solid fa-lock"></i> Connexion sécurisée. Vos données ne sont jamais partagées ni revendues.</p>
@@ -200,7 +211,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, watch, nextTick, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import { useCartStore } from "../stores/cart";
@@ -225,6 +236,8 @@ const theme = ref(localStorage.getItem("pb_theme") || "light");
 
 const loginForm = reactive({ email: "", password: "" });
 const registerForm = reactive({ firstName: "", lastName: "", email: "", phone: "", password: "" });
+const verify = reactive({ active: false, email: "", code: "", cooldown: 0 });
+let cdTimer = null;
 const pf = reactive({ firstName: "", lastName: "", phone: "", address: "", city: "" });
 const pw = reactive({ current: "", next: "", confirm: "" });
 
@@ -267,10 +280,37 @@ async function doRegister() {
   error.value = "";
   if (registerForm.password.length < 8) { error.value = "Le mot de passe doit contenir au moins 8 caractères."; return; }
   busy.value = true;
-  try { await auth.register({ ...registerForm, phone: registerForm.phone || undefined }); await loadOrders(); afterAuth(); }
+  try {
+    const r = await auth.register({ ...registerForm, phone: registerForm.phone || undefined });
+    if (r && r.needsVerification) startVerify(r.email || registerForm.email);
+    else { await loadOrders(); afterAuth(); }
+  }
   catch (e) { error.value = apiError(e, "Impossible de créer le compte."); }
   finally { busy.value = false; }
 }
+function startCooldown(sec = 60) {
+  clearInterval(cdTimer); verify.cooldown = sec;
+  cdTimer = setInterval(() => { verify.cooldown = Math.max(0, verify.cooldown - 1); if (!verify.cooldown) clearInterval(cdTimer); }, 1000);
+}
+function startVerify(email) { verify.active = true; verify.email = email; verify.code = ""; startCooldown(60); }
+function cancelVerify() { clearInterval(cdTimer); verify.active = false; verify.code = ""; verify.cooldown = 0; error.value = ""; }
+async function doVerify() {
+  error.value = ""; busy.value = true;
+  try {
+    await auth.verifyEmail(verify.email, verify.code);
+    clearInterval(cdTimer); verify.active = false; verify.code = "";
+    toast.show("Compte activé, bienvenue !");
+    await loadOrders(); afterAuth();
+  } catch (e) { error.value = apiError(e, "Code incorrect."); }
+  finally { busy.value = false; }
+}
+async function doResend() {
+  error.value = ""; busy.value = true;
+  try { await auth.resendCode(verify.email); startCooldown(60); toast.show("Nouveau code envoyé"); }
+  catch (e) { error.value = apiError(e, "Envoi impossible pour le moment."); }
+  finally { busy.value = false; }
+}
+onBeforeUnmount(() => clearInterval(cdTimer));
 async function doLogout() { confirmOut.value = false; await auth.logout(); orders.value = []; view.value = "home"; toast.show("Vous êtes déconnecté"); }
 
 async function saveProfile() {
@@ -361,6 +401,10 @@ h1, h2, h3 { color: var(--ink); }
 .meter i { display: block; height: 100%; border-radius: 3px; transition: width .3s, background .3s; }
 .cta { display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 99px; background: #D4A62A; color: #111; font-weight: 700; font-size: 1rem; text-decoration: none; transition: transform .15s, opacity .2s; }
 .cta:active { transform: scale(.98); } .cta:disabled { opacity: .6; }
+.fld input.code { text-align: center; letter-spacing: .45em; font-size: 1.6rem; font-weight: 700; height: 60px; padding-left: .45em; }
+.vlinks { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.linkbtn { background: none; border: 0; padding: 8px 4px; color: var(--ink2); text-decoration: underline; font-size: .88rem; cursor: pointer; }
+.linkbtn:disabled { opacity: .5; text-decoration: none; cursor: default; }
 .cta.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--border); margin-top: 18px; }
 .cta.sm { height: 44px; padding: 0 22px; display: inline-flex; margin-top: 14px; }
 .trust { color: var(--ink3); font-size: .78rem; text-align: center; margin-top: 18px; line-height: 1.5; }

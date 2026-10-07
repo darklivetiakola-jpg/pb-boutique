@@ -15,7 +15,16 @@ export const useAuthStore = defineStore("auth", {
     },
     async register(payload) {
       const { data } = await apiClient.post("/auth/register", payload);
+      if (!data.needsVerification) this.user = data;   // sinon : il faut d'abord saisir le code reçu par email
+      return data;
+    },
+    async verifyEmail(email, code) {
+      const { data } = await apiClient.post("/auth/verify-email", { email, code });
       this.user = data; return data;
+    },
+    async resendCode(email) {
+      const { data } = await apiClient.post("/auth/resend-code", { email });
+      return data;
     },
     async loginWithGoogle(credential) {
       const { data } = await apiClient.post("/auth/google", { credential });

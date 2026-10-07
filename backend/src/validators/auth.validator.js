@@ -29,3 +29,10 @@ export const updateProfileSchema = z.object({
   address: z.string().trim().max(200).optional().or(z.literal("")),
   city: z.string().trim().max(80).optional().or(z.literal("")),
 }).strict();
+
+export const verifyEmailSchema = z.object({
+  email: z.string().email(),
+  code: z.string().regex(/^\d{6}$/, "Le code contient 6 chiffres"),
+});
+
+export const resendCodeSchema = z.object({ email: z.string().email() });
