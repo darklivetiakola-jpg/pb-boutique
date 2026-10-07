@@ -1,23 +1,23 @@
 {
   "cat-chemises": {
     "file": "cat-chemises.jpg",
-    "v": 1791316657312
+    "v": 1791331257877
   },
   "cat-polos": {
     "file": "cat-polos.jpg",
-    "v": 1791316931831
+    "v": 1791331775774
   },
   "cat-costumes": {
     "file": "cat-costumes.jpg",
-    "v": 1791316942618
+    "v": 1791331673675
   },
   "cat-pantalons": {
     "file": "cat-pantalons.jpg",
-    "v": 1791316950074
+    "v": 1791331410148
   },
   "cat-accessoires": {
     "file": "cat-accessoires.jpg",
-    "v": 1791316957273
+    "v": 1791331442686
   },
   "cat-nouveautes": {
     "file": "cat-nouveautes.jpg",
@@ -30,5 +30,9 @@
   "hero-poster": {
     "file": "hero-poster.jpg",
     "v": 1791316979521
+  },
+  "cat-tee-shirts": {
+    "file": "cat-tee-shirts.jpg",
+    "v": 1791331557492
   }
 }
