@@ -11,6 +11,7 @@ import Customers from "../views/Customers.vue";
 import Payments from "../views/Payments.vue";
 import Posts from "../views/Posts.vue";
 import Settings from "../views/Settings.vue";
+import Promos from "../views/Promos.vue";
 
 const routes = [
   { path: "/login", name: "login", component: Login, meta: { public: true } },
@@ -25,6 +26,7 @@ const routes = [
       { path: "clients", name: "customers", component: Customers },
       { path: "paiements", name: "payments", component: Payments },
       { path: "contenu", name: "posts", component: Posts },
+      { path: "promotions", name: "promos", component: Promos },
       { path: "parametres", name: "settings", component: Settings },
     ],
   },

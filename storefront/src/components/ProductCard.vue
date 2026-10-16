@@ -2,7 +2,8 @@
   <article class="prod-card" role="link" tabindex="0" @click="goToProduct" @keydown.enter="goToProduct">
     <div class="prod-card-img">
       <img :src="p.img" :alt="p.name" loading="lazy" />
-      <span v-if="p.badge === 'new'" class="prod-badge new">Nouveau</span>
+      <span v-if="p.flash" class="prod-badge flash">⚡ −{{ p.pct }}%</span>
+      <span v-else-if="p.badge === 'new'" class="prod-badge new">Nouveau</span>
       <span v-else-if="p.pct >= 25" class="prod-badge sale">−{{ p.pct }}%</span>
       <button class="prod-wl" :class="{ on: cart.isWished(p.id) }" @click.stop="cart.toggleWishlist(p.id)"
         :aria-label="cart.isWished(p.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'" :aria-pressed="cart.isWished(p.id)">

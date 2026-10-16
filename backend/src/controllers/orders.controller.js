@@ -1,4 +1,6 @@
 import { ensureVariants } from "../utils/variants.js";
+import { priceOf } from "../utils/pricing.js";
+import { onOrderCreated, onOrderStatusChanged } from "../services/notifications.service.js";
 import crypto from "crypto";
 import { prisma } from "../utils/prisma.js";
 import { initiatePayment, verifyTransaction, isValidCinetPaySignature } from "../services/cinetpay.service.js";
@@ -34,7 +36,7 @@ export async function checkout(req, res) {
   }
   if (!cleanItems.length) return res.status(422).json({ error: "Un article de votre panier n’est plus disponible. Videz le panier puis réessayez." });
 
-  const totalAmount = cleanItems.reduce((s, it) => s + it.product.basePrice * it.qty, 0);
+  const totalAmount = cleanItems.reduce((s, it) => s + priceOf(it.product) * it.qty, 0);
 
   const order = await prisma.order.create({
     data: {
@@ -47,11 +49,13 @@ export async function checkout(req, res) {
         create: cleanItems.map(it => ({
           variantId: it.variant.id, productId: it.product.id,
           productName: it.product.name, size: it.variant.size,
-          unitPrice: it.product.basePrice, quantity: it.qty,
+          unitPrice: priceOf(it.product), quantity: it.qty,
         })),
       },
     },
   });
+
+  await onOrderCreated(order, cleanItems.reduce((n, it) => n + it.qty, 0));
 
   const paymentUrl = await initiatePayment(order);
 
@@ -81,7 +85,8 @@ export async function cinetpayWebhook(req, res) {
 
   if (status === "ACCEPTED") {
     await prisma.payment.update({ where: { id: payment.id }, data: { status: "ACCEPTED", rawResponse: result } });
-    await prisma.order.update({ where: { id: payment.orderId }, data: { status: "PAID" } });
+    const paid = await prisma.order.update({ where: { id: payment.orderId }, data: { status: "PAID" } });
+    await onOrderStatusChanged(paid, { fromWebhook: true });
   } else if (status === "REFUSED") {
     await prisma.payment.update({ where: { id: payment.id }, data: { status: "REFUSED", rawResponse: result } });
   }
@@ -100,9 +105,13 @@ export async function listOrders(req, res) {
 }
 
 export async function updateOrderStatus(req, res) {
+  const previous = await prisma.order.findUnique({ where: { id: req.params.id } });
+  if (!previous) return res.status(404).json({ error: "Commande introuvable." });
   const order = await prisma.order.update({
     where: { id: req.params.id },
     data: { status: req.body.status },
   });
+  // le client est prévenu à chaque nouvelle étape de son colis
+  if (previous.status !== order.status) await onOrderStatusChanged(order);
   res.json(order);
 }

@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { cookieOptions } from "../config/env.js";
 import { prisma } from "../utils/prisma.js";
+import { priceOf } from "../utils/pricing.js";
 
 async function getOrCreateCart(req, res) {
   let sessionKey = req.cookies?.pb_cart_session;
@@ -22,9 +23,9 @@ function serializeCart(cart) {
     variantId: i.variantId,
     productName: i.variant.product.name,
     size: i.variant.size,
-    unitPrice: i.variant.product.basePrice,
+    unitPrice: priceOf(i.variant.product),
     quantity: i.quantity,
-    subtotal: i.variant.product.basePrice * i.quantity,
+    subtotal: priceOf(i.variant.product) * i.quantity,
   }));
   return {
     id: cart.id,

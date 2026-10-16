@@ -29,7 +29,10 @@
           <div class="text-xs text-muted">{{ section }}</div>
           <h1 class="text-xl font-bold tracking-tight leading-tight">{{ title }}</h1>
         </div>
-        <a href="/" target="_blank" class="btn-outline !bg-paper border border-line text-sm !py-2">Voir la boutique</a>
+        <div class="flex items-center gap-2">
+          <NotificationCenter />
+          <a href="/" target="_blank" class="btn-outline !bg-paper border border-line text-sm !py-2">Voir la boutique</a>
+        </div>
       </header>
       <main class="flex-1 px-5 lg:px-8 pb-28 lg:pb-10 pt-2">
         <router-view v-slot="{ Component }">
@@ -50,13 +53,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import apiClient from "../api/client";
 import SideLink from "./SideLink.vue";
 const logo = import.meta.env.BASE_URL + "logo.png";
 import Icon from "./Icon.vue";
+import NotificationCenter from "./NotificationCenter.vue";
 
 const links = [
   { to: "/", icon: "grid", label: "Tableau de bord", exact: true },
@@ -66,6 +70,7 @@ const links = [
   { to: "/clients", icon: "users", label: "Clients" },
   { to: "/paiements", icon: "card", label: "Paiements" },
   { to: "/contenu", icon: "edit", label: "Publications" },
+  { to: "/promotions", icon: "tag", label: "Promotions" },
   { to: "/parametres", icon: "settings", label: "Paramètres" },
 ];
 
@@ -82,6 +87,7 @@ const titles = {
   customers: ["Ventes", "Clients"],
   payments: ["Ventes", "Paiements"],
   posts: ["Marketing", "Contenu & Promotions"],
+  promos: ["Marketing", "Promotions & Ventes flash"],
   settings: ["Compte", "Paramètres"],
 };
 const section = computed(() => titles[route.name]?.[0] || "");
@@ -91,6 +97,15 @@ async function handleLogout() {
   await auth.logout();
   router.push("/login");
 }
+
+async function refreshPending() {
+  try {
+    const { data } = await apiClient.get("/dashboard/stats");
+    pendingCount.value = data.pendingOrders || 0;
+  } catch { /* silencieux */ }
+}
+onMounted(() => window.addEventListener("pb:orders-refresh", refreshPending));
+onBeforeUnmount(() => window.removeEventListener("pb:orders-refresh", refreshPending));
 
 onMounted(async () => {
   try {

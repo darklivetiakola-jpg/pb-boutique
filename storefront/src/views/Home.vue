@@ -29,6 +29,10 @@
       </button>
     </section>
 
+    <!-- AFFICHES + VENTES FLASH -->
+    <PromoBanners />
+    <FlashSale />
+
     <!-- CATEGORIES -->
     <section class="section" id="categories">
       <div class="container">
@@ -125,6 +129,8 @@
 import { img } from "../config/images";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import ProductCard from "../components/ProductCard.vue";
+import PromoBanners from "../components/PromoBanners.vue";
+import FlashSale from "../components/FlashSale.vue";
 import { useProductsStore } from "../stores/products";
 import { useToastStore } from "../stores/toast";
 

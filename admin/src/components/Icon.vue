@@ -18,6 +18,8 @@
     <template v-else-if="name === 'upload'"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></template>
     <template v-else-if="name === 'image'"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></template>
     <template v-else-if="name === 'check'"><path d="M20 6L9 17l-5-5"/></template>
+    <template v-else-if="name === 'bell'"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></template>
+    <template v-else-if="name === 'tag'"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></template>
   </svg>
 </template>
 <script setup>

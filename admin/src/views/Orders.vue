@@ -214,8 +214,9 @@ async function setStatus(o, status) {
 }
 function cancel(o) { if (confirm(`Annuler la commande ${o.reference} ?`)) setStatus(o, "CANCELLED"); }
 
-onMounted(() => { load(); timer = setInterval(() => load(), 45000); });
-onBeforeUnmount(() => clearInterval(timer));
+const onPush = () => load();
+onMounted(() => { load(); timer = setInterval(() => load(), 45000); window.addEventListener("pb:orders-refresh", onPush); });
+onBeforeUnmount(() => { clearInterval(timer); window.removeEventListener("pb:orders-refresh", onPush); });
 </script>
 
 <style scoped>

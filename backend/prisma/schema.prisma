@@ -63,6 +63,8 @@ model Product {
   origin           String?
   basePrice        Int
   compareAtPrice   Int?
+  flashPrice       Int?
+  flashEndsAt      DateTime?
   status           ProductStatus  @default(DRAFT)
   isFeatured       Boolean        @default(false)
   category         Category?      @relation(fields: [categoryId], references: [id])
@@ -204,4 +206,51 @@ model Post {
   ctaUrl      String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+// ─────────── Notifications (propriétaire + clients) ───────────
+enum NotifAudience {
+  ADMIN
+  CUSTOMER
+}
+
+model Notification {
+  id        String        @id @default(uuid())
+  audience  NotifAudience
+  userId    String?
+  type      String
+  title     String
+  message   String
+  orderRef  String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([audience, createdAt])
+  @@index([userId, createdAt])
+}
+
+// ─────────── Bandeau défilant / alerte / affiches ───────────
+enum PromoKind {
+  TICKER
+  ALERT
+  BANNER
+}
+
+model Promo {
+  id        String    @id @default(uuid())
+  kind      PromoKind @default(BANNER)
+  title     String
+  subtitle  String?
+  image     String?
+  ctaLabel  String?
+  ctaUrl    String?
+  bgColor   String?
+  textColor String?
+  active    Boolean   @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  position  Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

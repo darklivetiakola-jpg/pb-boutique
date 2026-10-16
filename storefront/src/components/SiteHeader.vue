@@ -14,6 +14,7 @@
             <i class="fa-solid fa-magnifying-glass"></i>
             <input v-model="search" @keydown.enter="doSearch" type="search" placeholder="Rechercher…" enterkeyhint="search" aria-label="Rechercher un produit" />
           </label>
+          <NotificationBell />
           <router-link to="/compte" class="hact hact-user" aria-label="Mon compte"><i class="fa-regular fa-user"></i></router-link>
           <router-link to="/favoris" class="hact" aria-label="Mes favoris">
             <i class="fa-regular fa-heart"></i>
@@ -48,6 +49,7 @@ import { ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "../stores/cart";
 import IconBag from "./IconBag.vue";
+import NotificationBell from "./NotificationBell.vue";
 import { useToastStore } from "../stores/toast";
 
 const route = useRoute();

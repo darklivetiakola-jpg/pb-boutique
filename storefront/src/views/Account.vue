@@ -311,6 +311,18 @@ async function doResend() {
   finally { busy.value = false; }
 }
 onBeforeUnmount(() => clearInterval(cdTimer));
+
+// Quand une notification annonce une nouvelle étape du colis, la liste des commandes se met à jour toute seule
+async function silentRefreshOrders() {
+  if (!auth.user) return;
+  try {
+    const { data } = await apiClient.get("/orders");
+    orders.value = data;
+    if (sel.value) sel.value = data.find((o) => o.id === sel.value.id) || sel.value;
+  } catch { /* ignoré */ }
+}
+onMounted(() => window.addEventListener("pb:orders-refresh", silentRefreshOrders));
+onBeforeUnmount(() => window.removeEventListener("pb:orders-refresh", silentRefreshOrders));
 async function doLogout() { confirmOut.value = false; await auth.logout(); orders.value = []; view.value = "home"; toast.show("Vous êtes déconnecté"); }
 
 async function saveProfile() {

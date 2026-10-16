@@ -1,4 +1,5 @@
 <template>
+  <PromoTicker />
   <SiteHeader />
   <router-view v-slot="{ Component, route }">
     <transition name="page">
@@ -27,17 +28,26 @@ import CheckoutModal from "./components/CheckoutModal.vue";
 import Toast from "./components/Toast.vue";
 import BackToTop from "./components/BackToTop.vue";
 import MobileTabBar from "./components/MobileTabBar.vue";
+import PromoTicker from "./components/PromoTicker.vue";
+import { usePromosStore } from "./stores/promos";
+import { useAuthStore } from "./stores/auth";
 import { useCheckoutStore } from "./stores/checkout";
 import { useProductsStore } from "./stores/products";
 
 const checkout = useCheckoutStore();
 const products = useProductsStore();
+const promos = usePromosStore();
+const auth = useAuthStore();
 
 onMounted(() => {
   const t = localStorage.getItem("pb_theme") === "dark" ? "dark" : "light"; // clair par défaut
   document.documentElement.setAttribute("data-theme", t);
   document.documentElement.style.colorScheme = t;
   products.fetchAll();
+  promos.start();
+  if (!auth.ready) auth.fetchMe();   // nécessaire pour la cloche de notifications
+  // les ventes flash lancées/arrêtées par le propriétaire apparaissent sans recharger la page
+  setInterval(() => { if (!document.hidden) products.fetchAll(true); }, 5 * 60 * 1000);
 });
 </script>
 

@@ -19,6 +19,8 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import customersRoutes from "./routes/customers.routes.js";
 import paymentsRoutes from "./routes/payments.routes.js";
 import uploadsRoutes, { UPLOAD_DIR } from "./routes/uploads.routes.js";
+import promosRoutes from "./routes/promos.routes.js";
+import notificationsRoutes from "./routes/notifications.routes.js";
 
 export const app = express();
 
@@ -77,6 +79,8 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/uploads", uploadsRoutes);
+app.use("/api/promos", promosRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 // ---- Sert la boutique (/) et l'admin (/admin) depuis ce même service : une seule adresse, pas de CORS ----
 const ROOT = path.resolve(process.cwd(), "..");
